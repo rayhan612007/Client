@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { authClient } from '@/lib/auth-client';
 import { Role } from '@/lib/auth-shared';
 import { toast } from 'sonner';
+import { WrenchIcon, ShieldCheckIcon, UserCheckIcon, ArrowRightIcon } from '@/components/Icons';
 
 const PUBLIC_LINKS = [
   { href: '/', label: 'Home' },
@@ -34,119 +35,221 @@ export default function Navbar() {
 
   async function signOut() {
     await authClient.signOut();
-    toast.success('Signed out');
+    toast.success('Signed out successfully');
     setMenuOpen(false);
+    setOpen(false);
     router.push('/');
     router.refresh();
   }
 
   return (
-    <header className="sticky top-0 z-40 border-b border-gray-200 bg-white/95 backdrop-blur">
-      <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
-        <Link href="/" className="flex items-center gap-2 text-lg font-bold text-gray-900">
-          <span aria-hidden>🔧</span> FixMate
+    <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/90 backdrop-blur-md shadow-xs">
+      <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 py-3.5">
+        {/* Brand Logo */}
+        <Link href="/" className="group flex items-center gap-2.5 transition">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
+            <WrenchIcon className="h-5 w-5 text-white" />
+          </div>
+          <div className="flex flex-col">
+            <span className="text-xl font-bold tracking-tight text-slate-900 group-hover:text-blue-600 transition-colors">
+              Fix<span className="text-blue-600">Mate</span>
+            </span>
+            <span className="hidden sm:inline-block text-[10px] font-medium tracking-wide uppercase text-slate-400 -mt-1">
+              Repair Platform
+            </span>
+          </div>
         </Link>
 
-        {/* desktop links */}
-        <div className="hidden items-center gap-6 md:flex">
-          {PUBLIC_LINKS.map((l) => (
-            <Link
-              key={l.href}
-              href={l.href}
-              className={isPublicActive(l.href) ? 'font-semibold text-blue-600' : 'text-gray-700 hover:text-blue-600'}
-            >
-              {l.label}
-            </Link>
-          ))}
+        {/* Desktop Links */}
+        <div className="hidden items-center gap-1 rounded-full border border-slate-200/70 bg-slate-50/80 p-1 md:flex">
+          {PUBLIC_LINKS.map((l) => {
+            const active = isPublicActive(l.href);
+            return (
+              <Link
+                key={l.href}
+                href={l.href}
+                className={`relative px-4 py-1.5 text-sm font-medium rounded-full transition-all ${
+                  active
+                    ? 'bg-white text-blue-600 shadow-xs font-semibold'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
+                }`}
+              >
+                {l.label}
+              </Link>
+            );
+          })}
         </div>
 
-        {/* desktop auth area */}
+        {/* Desktop Auth / User Action Area */}
         <div className="hidden items-center gap-3 md:flex">
           {isPending ? (
-            <div className="h-9 w-9 animate-pulse rounded-full bg-gray-200" />
+            <div className="h-9 w-9 animate-pulse rounded-full bg-slate-200" />
           ) : user ? (
             <div className="relative">
               <button
                 onClick={() => setMenuOpen((v) => !v)}
-                className="flex items-center gap-2 rounded-full ring-2 ring-transparent hover:ring-blue-300"
+                className="flex items-center gap-2.5 rounded-full border border-slate-200 bg-white py-1 pl-1 pr-3 shadow-xs hover:border-blue-400 hover:shadow-sm transition"
                 aria-label="Profile menu"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={user.image || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user.name || 'U')}
+                  src={user.image || 'https://ui-avatars.com/api/?background=2563eb&color=fff&name=' + encodeURIComponent(user.name || 'User')}
                   alt={user.name || 'avatar'}
-                  className="h-9 w-9 rounded-full object-cover"
+                  className="h-8 w-8 rounded-full object-cover ring-2 ring-white"
                 />
-              </button>
-              {menuOpen && (
-                <div className="absolute right-0 mt-2 w-56 rounded-xl border border-gray-200 bg-white p-3 shadow-lg">
-                  <p className="truncate text-sm font-semibold text-gray-900">{user.name}</p>
-                  <span className="mt-1 inline-block rounded-full bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-700">
-                    {role.charAt(0).toUpperCase() + role.slice(1)}
+                <div className="flex flex-col text-left">
+                  <span className="max-w-[110px] truncate text-xs font-semibold text-slate-800">
+                    {user.name || 'Account'}
                   </span>
-                  <div className="mt-3 flex flex-col gap-1 text-sm">
-                    <Link href={DASHBOARD_PATH[role]} onClick={() => setMenuOpen(false)} className="rounded px-2 py-1 hover:bg-gray-100">
-                      Dashboard
+                  <span className="text-[10px] font-medium text-slate-400 uppercase tracking-wider">
+                    {role}
+                  </span>
+                </div>
+              </button>
+
+              {menuOpen && (
+                <div className="absolute right-0 mt-2 w-64 rounded-2xl border border-slate-200 bg-white p-3 shadow-xl z-50">
+                  <div className="border-b border-slate-100 pb-3">
+                    <p className="truncate text-sm font-semibold text-slate-900">{user.name}</p>
+                    <p className="truncate text-xs text-slate-500">{user.email}</p>
+                    <div className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-semibold text-blue-700">
+                      <ShieldCheckIcon className="h-3.5 w-3.5 text-blue-600" />
+                      {role.charAt(0).toUpperCase() + role.slice(1)} Account
+                    </div>
+                  </div>
+
+                  <div className="mt-2 flex flex-col gap-1 text-sm font-medium">
+                    <Link
+                      href={DASHBOARD_PATH[role]}
+                      onClick={() => setMenuOpen(false)}
+                      className="flex items-center justify-between rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition"
+                    >
+                      <span>Dashboard Overview</span>
+                      <ArrowRightIcon className="h-4 w-4 text-slate-400" />
                     </Link>
-                    <Link href="/dashboard/profile" onClick={() => setMenuOpen(false)} className="rounded px-2 py-1 hover:bg-gray-100">
-                      Update Profile
+                    <Link
+                      href="/dashboard/profile"
+                      onClick={() => setMenuOpen(false)}
+                      className="flex items-center justify-between rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition"
+                    >
+                      <span>Update Profile</span>
+                      <UserCheckIcon className="h-4 w-4 text-slate-400" />
                     </Link>
-                    <button onClick={signOut} className="rounded px-2 py-1 text-left text-red-600 hover:bg-red-50">
-                      Sign Out
+                    <button
+                      onClick={signOut}
+                      className="mt-1 flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-sm font-medium text-rose-600 hover:bg-rose-50 transition"
+                    >
+                      <span>Sign Out</span>
+                      <span aria-hidden>🚪</span>
                     </button>
                   </div>
                 </div>
               )}
             </div>
           ) : (
-            <>
-              <Link href="/sign-in" className="rounded-lg px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100">
+            <div className="flex items-center gap-2">
+              <Link
+                href="/sign-in"
+                className="rounded-xl px-4 py-2 text-sm font-semibold text-slate-700 hover:text-blue-600 hover:bg-slate-50 transition"
+              >
                 Sign In
               </Link>
-              <Link href="/sign-up" className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">
-                Sign Up
+              <Link
+                href="/sign-up"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-blue-500/20 hover:from-blue-700 hover:to-indigo-700 hover:shadow-md transition"
+              >
+                <span>Get Started</span>
+                <ArrowRightIcon className="h-4 w-4" />
               </Link>
-            </>
+            </div>
           )}
         </div>
 
-        {/* mobile hamburger */}
-        <button className="md:hidden" onClick={() => setOpen((v) => !v)} aria-label="Menu">
-          <svg className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+        {/* Mobile Hamburger Button */}
+        <button
+          className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 md:hidden"
+          onClick={() => setOpen((v) => !v)}
+          aria-label="Toggle navigation menu"
+        >
+          <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
             {open ? <path d="M6 6l12 12M6 18L18 6" /> : <path d="M4 7h16M4 12h16M4 17h16" />}
           </svg>
         </button>
       </nav>
 
+      {/* Mobile Drawer Menu */}
       {open && (
-        <div className="border-t border-gray-100 px-4 py-3 md:hidden">
-          <div className="flex flex-col gap-2">
+        <div className="border-t border-slate-100 bg-white/95 px-4 py-4 backdrop-blur-md md:hidden shadow-lg">
+          <div className="flex flex-col gap-1.5">
             {PUBLIC_LINKS.map((l) => (
-              <Link key={l.href} href={l.href} onClick={() => setOpen(false)} className="rounded px-2 py-1.5 hover:bg-gray-100">
+              <Link
+                key={l.href}
+                href={l.href}
+                onClick={() => setOpen(false)}
+                className={`rounded-xl px-3.5 py-2.5 text-sm font-medium transition ${
+                  isPublicActive(l.href)
+                    ? 'bg-blue-50 text-blue-600 font-semibold'
+                    : 'text-slate-700 hover:bg-slate-50'
+                }`}
+              >
                 {l.label}
               </Link>
             ))}
+
+            <div className="my-2 border-t border-slate-100" />
+
             {user ? (
               <>
-                <Link href={DASHBOARD_PATH[role]} onClick={() => setOpen(false)} className="rounded px-2 py-1.5 hover:bg-gray-100">
+                <div className="flex items-center gap-3 px-3 py-2">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={user.image || 'https://ui-avatars.com/api/?background=2563eb&color=fff&name=' + encodeURIComponent(user.name || 'User')}
+                    alt={user.name || 'avatar'}
+                    className="h-9 w-9 rounded-full object-cover"
+                  />
+                  <div>
+                    <p className="text-sm font-semibold text-slate-800">{user.name}</p>
+                    <p className="text-xs text-slate-400 capitalize">{role}</p>
+                  </div>
+                </div>
+                <Link
+                  href={DASHBOARD_PATH[role]}
+                  onClick={() => setOpen(false)}
+                  className="rounded-xl px-3.5 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                >
                   Dashboard
                 </Link>
-                <Link href="/dashboard/profile" onClick={() => setOpen(false)} className="rounded px-2 py-1.5 hover:bg-gray-100">
+                <Link
+                  href="/dashboard/profile"
+                  onClick={() => setOpen(false)}
+                  className="rounded-xl px-3.5 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                >
                   Update Profile
                 </Link>
-                <button onClick={signOut} className="rounded px-2 py-1.5 text-left text-red-600 hover:bg-red-50">
+                <button
+                  onClick={signOut}
+                  className="rounded-xl px-3.5 py-2 text-left text-sm font-medium text-rose-600 hover:bg-rose-50"
+                >
                   Sign Out
                 </button>
               </>
             ) : (
-              <>
-                <Link href="/sign-in" onClick={() => setOpen(false)} className="rounded px-2 py-1.5 hover:bg-gray-100">
+              <div className="grid grid-cols-2 gap-2 pt-2">
+                <Link
+                  href="/sign-in"
+                  onClick={() => setOpen(false)}
+                  className="flex items-center justify-center rounded-xl border border-slate-200 py-2.5 text-center text-sm font-semibold text-slate-700 hover:bg-slate-50"
+                >
                   Sign In
                 </Link>
-                <Link href="/sign-up" onClick={() => setOpen(false)} className="rounded bg-blue-600 px-2 py-1.5 text-white">
+                <Link
+                  href="/sign-up"
+                  onClick={() => setOpen(false)}
+                  className="flex items-center justify-center rounded-xl bg-blue-600 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-700"
+                >
                   Sign Up
                 </Link>
-              </>
+              </div>
             )}
           </div>
         </div>
