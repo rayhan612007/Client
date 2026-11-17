@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     "Book verified technicians for smartphone, laptop, AC, refrigerator, TV and washing machine repairs. Pay only after the job is completed.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="en"

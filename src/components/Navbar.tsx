@@ -26,9 +26,10 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const user = session?.user as (typeof session extends { user: infer U } ? U : never) | undefined;
-
-  const role = (user?.role as Role | undefined) ?? 'customer';
+  const user = session?.user as
+    | { name?: string; email: string; image?: string; role?: Role }
+    | undefined;
+  const role = user?.role ?? 'customer';
   const isPublicActive = (href: string) => (href === '/' ? pathname === '/' : pathname.startsWith(href));
 
   async function signOut() {
