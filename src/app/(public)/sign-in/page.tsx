@@ -28,7 +28,8 @@ function SignInForm() {
       return;
     }
     toast.success('Signed in successfully');
-    if (next) {
+    // Only follow same-origin relative paths — blocks open redirects like //evil.com
+    if (next && next.startsWith('/') && !next.startsWith('//')) {
       router.push(next);
       return;
     }
