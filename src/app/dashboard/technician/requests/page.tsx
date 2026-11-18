@@ -2,16 +2,39 @@
 
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
-import { Booking, BookingStatus } from '@/lib/auth-shared';
+import { Booking, BookingStatus, STATUS_LABEL } from '@/lib/auth-shared';
 import { StatusBadge, PayBadge } from '@/components/badges';
+import { PageHeader } from '@/components/PageHeader';
+import { EmptyState } from '@/components/EmptyState';
+import { FilterPills } from '@/components/FilterPills';
+import { Field } from '@/components/SettingsCard';
+import { Input } from '@/components/ui/input';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { toast } from 'sonner';
+import {
+  CheckCircle2,
+  ClipboardList,
+  Loader2,
+  PlayCircle,
+  ThumbsDown,
+  ThumbsUp,
+  Wrench,
+  X,
+} from 'lucide-react';
 
-const FILTERS: (BookingStatus | 'all')[] = ['all', 'requested', 'accepted', 'in-progress', 'completed'];
+type Filter = BookingStatus | 'all';
 
 export default function TechnicianRequestsPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<BookingStatus | 'all'>('all');
+  const [filter, setFilter] = useState<Filter>('all');
   const [completeId, setCompleteId] = useState<string | null>(null);
   const [finalAmount, setFinalAmount] = useState('');
   const [busy, setBusy] = useState(false);
@@ -29,7 +52,20 @@ export default function TechnicianRequestsPage() {
   }
 
   useEffect(() => {
-    load();
+    let active = true;
+    api<{ data: Booking[] }>('/api/bookings/technician')
+      .then((res) => {
+        if (active) setBookings(res.data);
+      })
+      .catch(() => {
+        if (active) setBookings([]);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
   }, []);
 
   async function updateStatus(id: string, status: BookingStatus, amount?: number) {
@@ -37,7 +73,10 @@ export default function TechnicianRequestsPage() {
     try {
       await api(`/api/bookings/${id}/status`, {
         method: 'PATCH',
-        body: JSON.stringify({ status, ...(amount !== undefined ? { finalAmount: amount } : {}) }),
+        body: JSON.stringify({
+          status,
+          ...(amount !== undefined ? { finalAmount: amount } : {}),
+        }),
       });
       toast.success(`Job marked as ${status}`);
       setCompleteId(null);
@@ -49,121 +88,150 @@ export default function TechnicianRequestsPage() {
     }
   }
 
-  const shown = filter === 'all' ? bookings : bookings.filter((b) => b.status === filter);
+  const shown = filter === 'all' ? bookings : bookings.filter((booking) => booking.status === filter);
 
-  if (loading) {
-    return (
-      <div>
-        <h1 className="text-2xl font-bold">Manage Requests</h1>
-        <div className="mt-6 h-64 animate-pulse rounded-2xl bg-gray-100" />
-      </div>
-    );
-  }
+  const filters: { value: Filter; label: string; count: number }[] = [
+    { value: 'all', label: 'All', count: bookings.length },
+    ...(['requested', 'accepted', 'in-progress', 'completed'] as BookingStatus[]).map((status) => ({
+      value: status,
+      label: STATUS_LABEL[status],
+      count: bookings.filter((booking) => booking.status === status).length,
+    })),
+  ];
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold">Manage Requests</h1>
+    <div className="space-y-6">
+      <PageHeader
+        eyebrow="Technician workspace"
+        title="Manage requests"
+        description="Accept incoming jobs, move them through the pipeline and set the final amount."
+        icon={ClipboardList}
+      />
 
-      {/* status filter */}
-      <div className="mt-4 flex flex-wrap gap-2">
-        {FILTERS.map((f) => (
-          <button
-            key={f}
-            onClick={() => setFilter(f)}
-            className={`rounded-full px-3 py-1.5 text-xs font-semibold capitalize ${
-              filter === f ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 ring-1 ring-gray-200 hover:bg-gray-50'
-            }`}
-          >
-            {f === 'all' ? 'All' : f}
-          </button>
-        ))}
-      </div>
+      <FilterPills options={filters} value={filter} onChange={setFilter} />
 
-      {shown.length === 0 ? (
-        <div className="mt-6 rounded-2xl bg-white p-12 text-center">
-          <p className="text-5xl" aria-hidden>📭</p>
-          <p className="mt-3 font-semibold">No {filter === 'all' ? '' : filter} requests</p>
-        </div>
+      {loading ? (
+        <div className="h-64 animate-pulse rounded-2xl bg-muted" />
+      ) : shown.length === 0 ? (
+        <EmptyState
+          icon={Wrench}
+          title={`No ${filter === 'all' ? '' : STATUS_LABEL[filter]} requests`}
+          description="When customers book your services, their requests will appear here."
+        />
       ) : (
-        <div className="mt-6 overflow-x-auto rounded-2xl border border-gray-200 bg-white">
-          <table className="w-full min-w-[860px] text-left text-sm">
-            <thead className="border-b border-gray-200 bg-gray-50 text-xs uppercase text-gray-500">
-              <tr>
-                <th className="px-4 py-3">Service</th>
-                <th className="px-4 py-3">Customer</th>
-                <th className="px-4 py-3">Contact / Address</th>
-                <th className="px-4 py-3">Problem</th>
-                <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3">Payment</th>
-                <th className="px-4 py-3">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {shown.map((b) => (
-                <tr key={b._id} className="border-b border-gray-100 last:border-0">
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-3">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={b.serviceImage} alt="" className="h-10 w-14 rounded-lg object-cover" />
-                      <span className="font-medium">{b.serviceTitle}</span>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Service</TableHead>
+              <TableHead>Customer</TableHead>
+              <TableHead>Contact / address</TableHead>
+              <TableHead>Problem</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Payment</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {shown.map((booking) => (
+              <TableRow key={booking._id}>
+                <TableCell>
+                  <div className="flex min-w-[200px] items-center gap-3">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={booking.serviceImage}
+                      alt=""
+                      className="h-11 w-14 rounded-lg object-cover ring-1 ring-border"
+                    />
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-semibold">{booking.serviceTitle}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {new Date(booking.preferredDate).toLocaleDateString()}
+                      </p>
                     </div>
-                  </td>
-                  <td className="px-4 py-3">
-                    {b.customerName}
-                    <br />
-                    <span className="text-xs text-gray-400">{new Date(b.preferredDate).toLocaleDateString()}</span>
-                  </td>
-                  <td className="px-4 py-3">
-                    {b.customerPhone}
-                    <br />
-                    <span className="text-xs text-gray-400">{b.address}</span>
-                  </td>
-                  <td className="max-w-[220px] px-4 py-3"><span className="line-clamp-2 text-xs text-gray-500">{b.problemDescription}</span></td>
-                  <td className="px-4 py-3"><StatusBadge status={b.status} /></td>
-                  <td className="px-4 py-3"><PayBadge paid={b.paymentStatus === 'paid'} /></td>
-                  <td className="px-4 py-3">
-                    <div className="flex flex-wrap gap-2">
-                      {b.status === 'requested' && (
-                        <>
-                          <button disabled={busy} onClick={() => updateStatus(b._id, 'accepted')} className="rounded-lg bg-green-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-green-700 disabled:opacity-50">
-                            Accept
-                          </button>
-                          <button disabled={busy} onClick={() => updateStatus(b._id, 'rejected')} className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-50 disabled:opacity-50">
-                            Reject
-                          </button>
-                        </>
-                      )}
-                      {b.status === 'accepted' && (
-                        <button disabled={busy} onClick={() => updateStatus(b._id, 'in-progress')} className="rounded-lg bg-amber-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-amber-600 disabled:opacity-50">
-                          Start Work
-                        </button>
-                      )}
-                      {b.status === 'in-progress' && (
+                  </div>
+                </TableCell>
+                <TableCell className="text-sm text-foreground/80">{booking.customerName}</TableCell>
+                <TableCell>
+                  <p className="text-sm text-foreground/80">{booking.customerPhone}</p>
+                  <p className="max-w-[180px] truncate text-xs text-muted-foreground">
+                    {booking.address}
+                  </p>
+                </TableCell>
+                <TableCell>
+                  <p className="line-clamp-2 max-w-[220px] text-xs leading-relaxed text-muted-foreground">
+                    {booking.problemDescription}
+                  </p>
+                </TableCell>
+                <TableCell>
+                  <StatusBadge status={booking.status} />
+                </TableCell>
+                <TableCell>
+                  <PayBadge paid={booking.paymentStatus === 'paid'} />
+                </TableCell>
+                <TableCell>
+                  <div className="flex justify-end gap-2">
+                    {booking.status === 'requested' && (
+                      <>
                         <button
-                          onClick={() => {
-                            setCompleteId(b._id);
-                            setFinalAmount(String(b.basePrice));
-                          }}
-                          className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700"
+                          disabled={busy}
+                          onClick={() => updateStatus(booking._id, 'accepted')}
+                          className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-emerald-600 px-2.5 text-xs font-semibold text-white shadow-sm shadow-emerald-600/25 transition hover:bg-emerald-500 disabled:opacity-50"
                         >
-                          Mark Completed
+                          <ThumbsUp className="size-3.5" />
+                          Accept
                         </button>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                        <button
+                          disabled={busy}
+                          onClick={() => updateStatus(booking._id, 'rejected')}
+                          className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-rose-500/25 px-2.5 text-xs font-semibold text-rose-600 transition hover:bg-rose-500/10 disabled:opacity-50 dark:text-rose-400"
+                        >
+                          <ThumbsDown className="size-3.5" />
+                          Reject
+                        </button>
+                      </>
+                    )}
+                    {booking.status === 'accepted' && (
+                      <button
+                        disabled={busy}
+                        onClick={() => updateStatus(booking._id, 'in-progress')}
+                        className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-amber-500 px-2.5 text-xs font-semibold text-white shadow-sm shadow-amber-500/25 transition hover:bg-amber-400 disabled:opacity-50"
+                      >
+                        <PlayCircle className="size-3.5" />
+                        Start work
+                      </button>
+                    )}
+                    {booking.status === 'in-progress' && (
+                      <button
+                        onClick={() => {
+                          setCompleteId(booking._id);
+                          setFinalAmount(String(booking.basePrice));
+                        }}
+                        className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-primary px-2.5 text-xs font-semibold text-primary-foreground shadow-sm shadow-primary/25 transition hover:bg-primary/90"
+                      >
+                        <CheckCircle2 className="size-3.5" />
+                        Complete
+                      </button>
+                    )}
+                    {['completed', 'rejected', 'cancelled'].includes(booking.status) && (
+                      <span className="text-xs font-medium text-muted-foreground">No action</span>
+                    )}
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       )}
 
-      {/* complete modal (final amount) */}
+      {/* Complete job modal */}
       {completeId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" onClick={() => setCompleteId(null)}>
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4 backdrop-blur-sm"
+          onClick={() => setCompleteId(null)}
+        >
           <form
-            onSubmit={(e) => {
-              e.preventDefault();
+            onSubmit={(event) => {
+              event.preventDefault();
               const amount = Number(finalAmount);
               if (!Number.isFinite(amount) || amount <= 0) {
                 toast.error('Final amount must be greater than 0');
@@ -171,28 +239,61 @@ export default function TechnicianRequestsPage() {
               }
               updateStatus(completeId, 'completed', amount);
             }}
-            onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-sm rounded-2xl bg-white p-6"
+            onClick={(event) => event.stopPropagation()}
+            className="w-full max-w-sm overflow-hidden rounded-2xl border border-border bg-card text-card-foreground shadow-2xl animate-in-up"
           >
-            <h2 className="text-lg font-bold">Mark Job Completed</h2>
-            <label className="mt-4 block text-sm font-medium">
-              Final Amount (USD)
-              <input
-                type="number"
-                min="0.01"
-                step="0.01"
-                value={finalAmount}
-                onChange={(e) => setFinalAmount(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none"
-                required
-              />
-            </label>
-            <div className="mt-5 flex gap-3">
-              <button type="button" onClick={() => setCompleteId(null)} className="flex-1 rounded-lg border border-gray-300 py-2 font-semibold hover:bg-gray-50">
+            <div className="flex items-start justify-between gap-3 border-b border-border/60 px-5 py-4">
+              <div className="flex items-start gap-3">
+                <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/20 dark:text-emerald-400">
+                  <CheckCircle2 className="size-5" />
+                </span>
+                <div>
+                  <h2 className="text-base font-semibold tracking-tight">Complete this job</h2>
+                  <p className="text-xs text-muted-foreground">
+                    Set the final amount the customer will pay.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setCompleteId(null)}
+                className="flex size-8 items-center justify-center rounded-lg text-muted-foreground transition hover:bg-muted hover:text-foreground"
+                aria-label="Close"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+
+            <div className="px-5 py-5">
+              <Field label="Final amount (USD)" htmlFor="final-amount">
+                <Input
+                  id="final-amount"
+                  type="number"
+                  min="0.01"
+                  step="0.01"
+                  value={finalAmount}
+                  onChange={(event) => setFinalAmount(event.target.value)}
+                  className="h-11 rounded-xl"
+                  required
+                />
+              </Field>
+            </div>
+
+            <div className="flex flex-col-reverse gap-2 border-t border-border/60 bg-muted/30 px-5 py-4 sm:flex-row sm:justify-end">
+              <button
+                type="button"
+                onClick={() => setCompleteId(null)}
+                className="inline-flex h-10 items-center justify-center rounded-xl border border-border bg-background px-4 text-sm font-medium transition hover:bg-muted"
+              >
                 Back
               </button>
-              <button type="submit" disabled={busy} className="flex-1 rounded-lg bg-blue-600 py-2 font-semibold text-white hover:bg-blue-700 disabled:opacity-50">
-                {busy ? 'Saving…' : 'Confirm Completed'}
+              <button
+                type="submit"
+                disabled={busy}
+                className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-sm shadow-primary/25 transition hover:bg-primary/90 disabled:opacity-50"
+              >
+                {busy && <Loader2 className="size-4 animate-spin" />}
+                Confirm completed
               </button>
             </div>
           </form>

@@ -1,13 +1,32 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { api } from '@/lib/api';
-import { Booking, BookingStatus } from '@/lib/auth-shared';
+import { Booking, BookingStatus, STATUS_LABEL } from '@/lib/auth-shared';
 import { StatusBadge, PayBadge } from '@/components/badges';
+import { PageHeader } from '@/components/PageHeader';
+import { EmptyState } from '@/components/EmptyState';
+import { FilterPills } from '@/components/FilterPills';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { ClipboardList } from 'lucide-react';
 
 type Filter = BookingStatus | 'all';
 
-const FILTERS: Filter[] = ['all', 'requested', 'accepted', 'in-progress', 'completed', 'rejected', 'cancelled'];
+const STATUSES: BookingStatus[] = [
+  'requested',
+  'accepted',
+  'in-progress',
+  'completed',
+  'rejected',
+  'cancelled',
+];
 
 export default function AdminBookingsPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -21,97 +40,98 @@ export default function AdminBookingsPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  const shown = filter === 'all' ? bookings : bookings.filter((b) => b.status === filter);
+  const shown = useMemo(
+    () => (filter === 'all' ? bookings : bookings.filter((booking) => booking.status === filter)),
+    [bookings, filter],
+  );
 
-  if (loading) {
-    return (
-      <div>
-        <h1 className="text-2xl font-bold">All Bookings</h1>
-        <div className="mt-6 h-64 animate-pulse rounded-2xl bg-gray-100" />
-      </div>
-    );
-  }
+  const filterOptions = [
+    { value: 'all' as Filter, label: 'All', count: bookings.length },
+    ...STATUSES.map((status) => ({
+      value: status as Filter,
+      label: STATUS_LABEL[status],
+      count: bookings.filter((booking) => booking.status === status).length,
+    })),
+  ];
 
   return (
-    <div>
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <h1 className="text-2xl font-bold">All Bookings</h1>
-        <span className="text-sm text-gray-500">{bookings.length} bookings</span>
-      </div>
+    <div className="space-y-6">
+      <PageHeader
+        eyebrow="Admin workspace"
+        title="All bookings"
+        description="Monitor every repair job across customers and technicians."
+        icon={ClipboardList}
+        actions={
+          <span className="inline-flex h-10 items-center rounded-xl border border-border bg-card px-3 text-xs font-semibold text-muted-foreground tabular-nums">
+            {bookings.length} bookings
+          </span>
+        }
+      />
 
-      {/* status filter */}
-      <div className="mt-4 flex flex-wrap gap-2">
-        {FILTERS.map((f) => (
-          <button
-            key={f}
-            onClick={() => setFilter(f)}
-            className={`rounded-full px-3 py-1.5 text-xs font-semibold capitalize ${
-              filter === f ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 ring-1 ring-gray-200 hover:bg-gray-50'
-            }`}
-          >
-            {f === 'all' ? 'All' : f}
-          </button>
-        ))}
-      </div>
+      <FilterPills options={filterOptions} value={filter} onChange={setFilter} />
 
-      {shown.length === 0 ? (
-        <div className="mt-6 rounded-2xl bg-white p-12 text-center">
-          <p className="text-5xl" aria-hidden>📋</p>
-          <p className="mt-3 font-semibold">No {filter === 'all' ? '' : filter} bookings</p>
-          <p className="mt-1 text-sm text-gray-500">Bookings on the platform will show up here.</p>
-        </div>
+      {loading ? (
+        <div className="h-64 animate-pulse rounded-2xl bg-muted" />
+      ) : shown.length === 0 ? (
+        <EmptyState
+          icon={ClipboardList}
+          title={`No ${filter === 'all' ? '' : STATUS_LABEL[filter]} bookings`}
+          description="Bookings on the platform will show up here."
+        />
       ) : (
-        <div className="mt-6 overflow-x-auto rounded-2xl border border-gray-200 bg-white">
-          <table className="w-full min-w-[980px] text-left text-sm">
-            <thead className="border-b border-gray-200 bg-gray-50 text-xs uppercase text-gray-500">
-              <tr>
-                <th className="px-4 py-3">Service</th>
-                <th className="px-4 py-3">Customer</th>
-                <th className="px-4 py-3">Technician</th>
-                <th className="px-4 py-3">Date</th>
-                <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3">Payment</th>
-                <th className="px-4 py-3">Amount</th>
-              </tr>
-            </thead>
-            <tbody>
-              {shown.map((b) => (
-                <tr key={b._id} className="border-b border-gray-100 last:border-0">
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-3">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={b.serviceImage} alt="" className="h-10 w-14 rounded-lg object-cover" />
-                      <div>
-                        <p className="font-medium">{b.serviceTitle}</p>
-                        <p className="text-xs text-gray-400">{b.category}</p>
-                      </div>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Service</TableHead>
+              <TableHead>Customer</TableHead>
+              <TableHead>Technician</TableHead>
+              <TableHead>Date</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Payment</TableHead>
+              <TableHead>Amount</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {shown.map((booking) => (
+              <TableRow key={booking._id}>
+                <TableCell>
+                  <div className="flex min-w-[220px] items-center gap-3">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={booking.serviceImage}
+                      alt=""
+                      className="h-11 w-14 rounded-lg object-cover ring-1 ring-border"
+                    />
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-semibold">{booking.serviceTitle}</p>
+                      <p className="text-xs text-muted-foreground">{booking.category}</p>
                     </div>
-                  </td>
-                  <td className="px-4 py-3">
-                    {b.customerName}
-                    <br />
-                    <span className="text-xs text-gray-400">{b.customerEmail}</span>
-                  </td>
-                  <td className="px-4 py-3">
-                    {b.technicianName}
-                    <br />
-                    <span className="text-xs text-gray-400">{b.technicianEmail}</span>
-                  </td>
-                  <td className="px-4 py-3 text-gray-500">{new Date(b.preferredDate).toLocaleDateString()}</td>
-                  <td className="px-4 py-3">
-                    <StatusBadge status={b.status} />
-                  </td>
-                  <td className="px-4 py-3">
-                    <PayBadge paid={b.paymentStatus === 'paid'} />
-                  </td>
-                  <td className="px-4 py-3 font-semibold">
-                    ${(b.finalAmount || b.basePrice).toFixed(2)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <p className="text-sm text-foreground/80">{booking.customerName}</p>
+                  <p className="truncate text-xs text-muted-foreground">{booking.customerEmail}</p>
+                </TableCell>
+                <TableCell>
+                  <p className="text-sm text-foreground/80">{booking.technicianName}</p>
+                  <p className="truncate text-xs text-muted-foreground">{booking.technicianEmail}</p>
+                </TableCell>
+                <TableCell className="text-sm text-muted-foreground">
+                  {new Date(booking.preferredDate).toLocaleDateString()}
+                </TableCell>
+                <TableCell>
+                  <StatusBadge status={booking.status} />
+                </TableCell>
+                <TableCell>
+                  <PayBadge paid={booking.paymentStatus === 'paid'} />
+                </TableCell>
+                <TableCell className="font-semibold tabular-nums">
+                  ${(booking.finalAmount || booking.basePrice).toFixed(2)}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       )}
     </div>
   );

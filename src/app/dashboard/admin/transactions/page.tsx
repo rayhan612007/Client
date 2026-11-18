@@ -3,6 +3,18 @@
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import { Payment } from '@/lib/auth-shared';
+import { PageHeader } from '@/components/PageHeader';
+import { EmptyState } from '@/components/EmptyState';
+import { StatCard } from '@/components/StatCard';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Receipt, TrendingUp, Wallet } from 'lucide-react';
 
 export default function AdminTransactionsPage() {
   const [payments, setPayments] = useState<Payment[]>([]);
@@ -19,77 +31,102 @@ export default function AdminTransactionsPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) {
-    return (
-      <div>
-        <h1 className="text-2xl font-bold">Transactions</h1>
-        <div className="mt-6 h-24 animate-pulse rounded-2xl bg-gray-100" />
-        <div className="mt-4 h-64 animate-pulse rounded-2xl bg-gray-100" />
-      </div>
-    );
-  }
+  const average = payments.length > 0 ? totalRevenue / payments.length : 0;
 
   return (
-    <div>
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <h1 className="text-2xl font-bold">Transactions</h1>
-        <span className="text-sm text-gray-500">{payments.length} payments</span>
-      </div>
+    <div className="space-y-6">
+      <PageHeader
+        eyebrow="Admin workspace"
+        title="Transactions"
+        description="Every Stripe payment processed on FixMate, in one ledger."
+        icon={Receipt}
+        actions={
+          <span className="inline-flex h-10 items-center rounded-xl border border-border bg-card px-3 text-xs font-semibold text-muted-foreground tabular-nums">
+            {payments.length} payments
+          </span>
+        }
+      />
 
-      {/* total revenue above the table */}
-      <div className="mt-6 flex items-center gap-4 rounded-2xl border border-green-200 bg-green-50 p-5">
-        <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-green-100 text-2xl" aria-hidden>
-          💰
-        </span>
-        <div>
-          <p className="text-sm text-green-700">Total Revenue</p>
-          <p className="text-2xl font-bold text-green-800">${totalRevenue.toFixed(2)}</p>
-        </div>
-      </div>
-
-      {payments.length === 0 ? (
-        <div className="mt-6 rounded-2xl bg-white p-12 text-center">
-          <p className="text-5xl" aria-hidden>🧾</p>
-          <p className="mt-3 font-semibold">No transactions yet</p>
-          <p className="mt-1 text-sm text-gray-500">Payments made through Stripe will appear here.</p>
+      {loading ? (
+        <div className="grid gap-4 sm:grid-cols-3">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <div key={index} className="h-32 animate-pulse rounded-2xl bg-muted" />
+          ))}
         </div>
       ) : (
-        <div className="mt-6 overflow-x-auto rounded-2xl border border-gray-200 bg-white">
-          <table className="w-full min-w-[900px] text-left text-sm">
-            <thead className="border-b border-gray-200 bg-gray-50 text-xs uppercase text-gray-500">
-              <tr>
-                <th className="px-4 py-3">Service</th>
-                <th className="px-4 py-3">Customer</th>
-                <th className="px-4 py-3">Technician</th>
-                <th className="px-4 py-3">Amount</th>
-                <th className="px-4 py-3">Transaction ID</th>
-                <th className="px-4 py-3">Payment Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {payments.map((p) => (
-                <tr key={p._id} className="border-b border-gray-100 last:border-0">
-                  <td className="px-4 py-3 font-medium">{p.serviceTitle}</td>
-                  <td className="px-4 py-3">
-                    {p.customerName}
-                    <br />
-                    <span className="text-xs text-gray-400">{p.customerEmail}</span>
-                  </td>
-                  <td className="px-4 py-3">
-                    {p.technicianName}
-                    <br />
-                    <span className="text-xs text-gray-400">{p.technicianEmail}</span>
-                  </td>
-                  <td className="px-4 py-3 font-semibold text-green-700">
-                    ${p.amount.toFixed(2)} <span className="text-xs font-normal uppercase text-gray-400">{p.currency}</span>
-                  </td>
-                  <td className="px-4 py-3 font-mono text-xs text-gray-500">{p.transactionId}</td>
-                  <td className="px-4 py-3 text-gray-500">{new Date(p.paidAt).toLocaleString()}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="grid gap-4 sm:grid-cols-3">
+          <StatCard
+            label="Total revenue"
+            value={`$${totalRevenue.toFixed(2)}`}
+            icon={TrendingUp}
+            accent="emerald"
+            hint="Collected through Stripe (test mode)"
+          />
+          <StatCard
+            label="Transactions"
+            value={payments.length}
+            icon={Receipt}
+            accent="blue"
+            hint="Successful completed-job payments"
+          />
+          <StatCard
+            label="Average payment"
+            value={`$${average.toFixed(2)}`}
+            icon={Wallet}
+            accent="violet"
+            hint="Mean value per transaction"
+          />
         </div>
+      )}
+
+      {loading ? (
+        <div className="h-64 animate-pulse rounded-2xl bg-muted" />
+      ) : payments.length === 0 ? (
+        <EmptyState
+          icon={Receipt}
+          title="No transactions yet"
+          description="Payments made through Stripe will appear here as customers settle completed jobs."
+        />
+      ) : (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Service</TableHead>
+              <TableHead>Customer</TableHead>
+              <TableHead>Technician</TableHead>
+              <TableHead>Amount</TableHead>
+              <TableHead>Transaction ID</TableHead>
+              <TableHead>Payment date</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {payments.map((payment) => (
+              <TableRow key={payment._id}>
+                <TableCell className="font-medium">{payment.serviceTitle}</TableCell>
+                <TableCell>
+                  <p className="text-sm text-foreground/80">{payment.customerName}</p>
+                  <p className="truncate text-xs text-muted-foreground">{payment.customerEmail}</p>
+                </TableCell>
+                <TableCell>
+                  <p className="text-sm text-foreground/80">{payment.technicianName}</p>
+                  <p className="truncate text-xs text-muted-foreground">{payment.technicianEmail}</p>
+                </TableCell>
+                <TableCell className="font-semibold tabular-nums text-emerald-600 dark:text-emerald-400">
+                  ${payment.amount.toFixed(2)}
+                  <span className="ml-1 text-[10px] font-normal text-muted-foreground uppercase">
+                    {payment.currency}
+                  </span>
+                </TableCell>
+                <TableCell className="max-w-[220px] truncate font-mono text-xs text-muted-foreground">
+                  {payment.transactionId}
+                </TableCell>
+                <TableCell className="text-sm text-muted-foreground">
+                  {new Date(payment.paidAt).toLocaleString()}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       )}
     </div>
   );

@@ -9,12 +9,12 @@ import {
 
 export default function AboutPage() {
   return (
-    <div className="bg-slate-50/50">
+    <div className="bg-background">
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-b from-blue-900 via-indigo-950 to-slate-950 py-20 text-white text-center">
         <div className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 h-[500px] w-[800px] rounded-full bg-blue-600/20 blur-[130px]" />
 
-        <div className="relative mx-auto max-w-4xl px-4 sm:px-6">
+        <div className="relative mx-auto max-w-4xl px-4 sm:px-6" data-aos="fade-up">
           <div className="inline-flex items-center gap-1.5 rounded-full border border-blue-400/30 bg-blue-500/10 px-3.5 py-1 text-xs font-semibold text-blue-300">
             <SparklesIcon className="h-3.5 w-3.5" />
             <span>Our Mission & Vision</span>
@@ -34,7 +34,7 @@ export default function AboutPage() {
       {/* Why We Built FixMate (The Story) */}
       <section className="mx-auto max-w-5xl px-4 py-16 sm:px-6">
         <div className="grid gap-8 md:grid-cols-2 items-center">
-          <div>
+          <div data-aos="fade-right">
             <span className="text-xs font-semibold uppercase tracking-wider text-blue-600">
               The Problem We Solve
             </span>
@@ -49,7 +49,7 @@ export default function AboutPage() {
             </p>
           </div>
 
-          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-md shadow-slate-200/50">
+          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-md shadow-slate-200/50" data-aos="fade-left">
             <h3 className="text-base font-bold text-slate-900 border-b border-slate-100 pb-3">
               The FixMate Standard
             </h3>
@@ -78,7 +78,7 @@ export default function AboutPage() {
       {/* 3 Stakeholders Role Breakdown */}
       <section className="border-y border-slate-200/80 bg-white py-16 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <div className="text-center">
+          <div data-aos="fade-up" className="text-center">
             <h2 className="text-3xl font-extrabold text-slate-900">
               Three Roles, One Unified Ecosystem
             </h2>
@@ -89,7 +89,11 @@ export default function AboutPage() {
 
           <div className="mt-12 grid gap-6 sm:grid-cols-3">
             {/* Customer Role */}
-            <div className="flex flex-col justify-between rounded-3xl border border-slate-200 bg-slate-50/50 p-6">
+            <div
+              className="flex flex-col justify-between rounded-3xl border border-border/70 bg-muted/40 p-6"
+              data-aos="fade-up"
+              data-aos-delay="0"
+            >
               <div>
                 <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-100 text-blue-600">
                   <UserCheckIcon className="h-6 w-6" />
@@ -105,7 +109,11 @@ export default function AboutPage() {
             </div>
 
             {/* Technician Role */}
-            <div className="flex flex-col justify-between rounded-3xl border border-slate-200 bg-slate-50/50 p-6">
+            <div
+              className="flex flex-col justify-between rounded-3xl border border-border/70 bg-muted/40 p-6"
+              data-aos="fade-up"
+              data-aos-delay="80"
+            >
               <div>
                 <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-100 text-indigo-600">
                   <WrenchIcon className="h-6 w-6" />
@@ -121,7 +129,11 @@ export default function AboutPage() {
             </div>
 
             {/* Admin Role */}
-            <div className="flex flex-col justify-between rounded-3xl border border-slate-200 bg-slate-50/50 p-6">
+            <div
+              className="flex flex-col justify-between rounded-3xl border border-border/70 bg-muted/40 p-6"
+              data-aos="fade-up"
+              data-aos-delay="160"
+            >
               <div>
                 <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-purple-100 text-purple-600">
                   <ShieldCheckIcon className="h-6 w-6" />
@@ -141,7 +153,7 @@ export default function AboutPage() {
 
       {/* CTA Strip */}
       <section className="bg-gradient-to-r from-blue-600 to-indigo-600 py-16 text-center text-white">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6">
+        <div className="mx-auto max-w-4xl px-4 sm:px-6" data-aos="fade-up">
           <h2 className="text-3xl font-extrabold sm:text-4xl">
             Join the Repair Revolution Today
           </h2>

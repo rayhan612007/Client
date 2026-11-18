@@ -1,10 +1,26 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { api, uploadImage } from '@/lib/api';
 import { Service, CATEGORIES } from '@/lib/auth-shared';
 import { ApprovalBadge } from '@/components/badges';
+import { PageHeader } from '@/components/PageHeader';
+import { EmptyState } from '@/components/EmptyState';
+import { ConfirmDialog } from '@/components/ConfirmDialog';
+import { Field } from '@/components/SettingsCard';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { toast } from 'sonner';
+import { FolderOpen, ImagePlus, Pencil, Plus, Trash2, X } from 'lucide-react';
 
 interface EditState {
   _id: string;
@@ -18,12 +34,16 @@ interface EditState {
   image: string;
 }
 
+const SELECT_CLASS =
+  'h-10 w-full rounded-xl border border-input bg-transparent px-3 text-sm text-foreground outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-input/30';
+
 export default function MyServicesPage() {
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
   const [edit, setEdit] = useState<EditState | null>(null);
-  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Service | null>(null);
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   async function load() {
     setLoading(true);
@@ -38,13 +58,31 @@ export default function MyServicesPage() {
   }
 
   useEffect(() => {
-    load();
+    let active = true;
+    api<{ data: Service[] }>('/api/services/my/all')
+      .then((res) => {
+        if (active) setServices(res.data);
+      })
+      .catch(() => {
+        if (active) setServices([]);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
   }, []);
 
-  async function toggleAvailable(s: Service) {
+  async function toggleAvailable(service: Service) {
     try {
-      await api(`/api/services/${s._id}`, { method: 'PATCH', body: JSON.stringify({ isAvailable: !s.isAvailable }) });
-      toast.success(s.isAvailable ? 'Service marked unavailable' : 'Service marked available');
+      await api(`/api/services/${service._id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ isAvailable: !service.isAvailable }),
+      });
+      toast.success(
+        service.isAvailable ? 'Service marked unavailable' : 'Service marked available',
+      );
       load();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Update failed');
@@ -52,18 +90,21 @@ export default function MyServicesPage() {
   }
 
   async function onDelete(id: string) {
-    setDeleteId(null);
+    setDeleting(true);
     try {
       await api(`/api/services/${id}`, { method: 'DELETE' });
       toast.success('Service deleted');
+      setDeleteTarget(null);
       load();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Delete failed');
+    } finally {
+      setDeleting(false);
     }
   }
 
-  async function onSaveEdit(e: React.FormEvent) {
-    e.preventDefault();
+  async function onSaveEdit(event: React.FormEvent) {
+    event.preventDefault();
     if (!edit) return;
     setSaving(true);
     try {
@@ -77,7 +118,9 @@ export default function MyServicesPage() {
           estimatedDuration: edit.estimatedDuration,
           serviceMode: edit.serviceMode,
           serviceArea: edit.serviceArea,
-          ...(edit.image !== services.find((s) => s._id === edit._id)?.image ? { image: edit.image } : {}),
+          ...(edit.image !== services.find((service) => service._id === edit._id)?.image
+            ? { image: edit.image }
+            : {}),
         }),
       });
       toast.success('Service updated — sent back to admin approval');
@@ -90,201 +133,318 @@ export default function MyServicesPage() {
     }
   }
 
-  const input = 'mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none';
-
-  if (loading) {
-    return (
-      <div>
-        <h1 className="text-2xl font-bold">My Services</h1>
-        <div className="mt-6 h-64 animate-pulse rounded-2xl bg-gray-100" />
-      </div>
-    );
-  }
-
-  if (services.length === 0) {
-    return (
-      <div className="rounded-2xl bg-white p-12 text-center">
-        <p className="text-5xl" aria-hidden>🔧</p>
-        <p className="mt-3 font-semibold">No services yet</p>
-        <a href="/dashboard/technician/add-service" className="mt-4 inline-block rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">
-          Add Your First Service
-        </a>
-      </div>
-    );
-  }
-
   return (
-    <div>
-      <h1 className="text-2xl font-bold">My Services</h1>
-      <div className="mt-6 overflow-x-auto rounded-2xl border border-gray-200 bg-white">
-        <table className="w-full min-w-[720px] text-left text-sm">
-          <thead className="border-b border-gray-200 bg-gray-50 text-xs uppercase text-gray-500">
-            <tr>
-              <th className="px-4 py-3">Service</th>
-              <th className="px-4 py-3">Category</th>
-              <th className="px-4 py-3">Price</th>
-              <th className="px-4 py-3">Approval</th>
-              <th className="px-4 py-3">Available</th>
-              <th className="px-4 py-3">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {services.map((s) => (
-              <tr key={s._id} className="border-b border-gray-100 last:border-0">
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-3">
+    <div className="space-y-6">
+      <PageHeader
+        eyebrow="Technician workspace"
+        title="My services"
+        description="Manage pricing, availability and listing details. Edits require re-approval."
+        icon={FolderOpen}
+        actions={
+          <Link
+            href="/dashboard/technician/add-service"
+            className="inline-flex h-10 items-center gap-2 rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-sm shadow-primary/25 transition hover:bg-primary/90"
+          >
+            <Plus className="size-4" />
+            Add service
+          </Link>
+        }
+      />
+
+      {loading ? (
+        <div className="h-64 animate-pulse rounded-2xl bg-muted" />
+      ) : services.length === 0 ? (
+        <EmptyState
+          icon={FolderOpen}
+          title="No services yet"
+          description="List your first repair service to start receiving customer requests."
+          action={
+            <Link
+              href="/dashboard/technician/add-service"
+              className="inline-flex h-10 items-center gap-2 rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90"
+            >
+              <Plus className="size-4" />
+              Add your first service
+            </Link>
+          }
+        />
+      ) : (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Service</TableHead>
+              <TableHead>Category</TableHead>
+              <TableHead>Price</TableHead>
+              <TableHead>Approval</TableHead>
+              <TableHead>Available</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {services.map((service) => (
+              <TableRow key={service._id}>
+                <TableCell>
+                  <div className="flex min-w-[220px] items-center gap-3">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={s.image} alt="" className="h-10 w-14 rounded-lg object-cover" />
-                    <span className="font-medium">{s.title}</span>
+                    <img
+                      src={service.image}
+                      alt=""
+                      className="h-11 w-14 rounded-lg object-cover ring-1 ring-border"
+                    />
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-semibold">{service.title}</p>
+                      <p className="truncate text-xs text-muted-foreground">{service.serviceArea}</p>
+                    </div>
                   </div>
-                </td>
-                <td className="px-4 py-3">{s.category}</td>
-                <td className="px-4 py-3">${s.basePrice}</td>
-                <td className="px-4 py-3"><ApprovalBadge status={s.approvalStatus} /></td>
-                <td className="px-4 py-3">
+                </TableCell>
+                <TableCell className="text-sm text-foreground/80">{service.category}</TableCell>
+                <TableCell className="font-semibold tabular-nums">${service.basePrice}</TableCell>
+                <TableCell>
+                  <ApprovalBadge status={service.approvalStatus} />
+                </TableCell>
+                <TableCell>
                   <button
-                    onClick={() => toggleAvailable(s)}
-                    className={`relative h-6 w-11 rounded-full transition ${s.isAvailable ? 'bg-green-500' : 'bg-gray-300'}`}
+                    onClick={() => toggleAvailable(service)}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                      service.isAvailable ? 'bg-emerald-500' : 'bg-muted-foreground/30'
+                    }`}
                     aria-label="Toggle availability"
+                    aria-pressed={service.isAvailable}
                   >
-                    <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all ${s.isAvailable ? 'left-[22px]' : 'left-0.5'}`} />
+                    <span
+                      className={`size-5 rounded-full bg-white shadow transition-transform ${
+                        service.isAvailable ? 'translate-x-[22px]' : 'translate-x-0.5'
+                      }`}
+                    />
                   </button>
-                </td>
-                <td className="px-4 py-3">
-                  <div className="flex gap-2">
+                </TableCell>
+                <TableCell>
+                  <div className="flex justify-end gap-2">
                     <button
                       onClick={() =>
                         setEdit({
-                          _id: s._id,
-                          title: s.title,
-                          category: s.category,
-                          description: s.description,
-                          basePrice: String(s.basePrice),
-                          estimatedDuration: s.estimatedDuration,
-                          serviceMode: s.serviceMode,
-                          serviceArea: s.serviceArea,
-                          image: s.image,
+                          _id: service._id,
+                          title: service.title,
+                          category: service.category,
+                          description: service.description,
+                          basePrice: String(service.basePrice),
+                          estimatedDuration: service.estimatedDuration,
+                          serviceMode: service.serviceMode,
+                          serviceArea: service.serviceArea,
+                          image: service.image,
                         })
                       }
-                      className="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-semibold hover:bg-gray-50"
+                      className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-border px-2.5 text-xs font-semibold transition hover:bg-muted"
                     >
+                      <Pencil className="size-3.5" />
                       Edit
                     </button>
-                    <button onClick={() => setDeleteId(s._id)} className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-50">
+                    <button
+                      onClick={() => setDeleteTarget(service)}
+                      className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-rose-500/25 px-2.5 text-xs font-semibold text-rose-600 transition hover:bg-rose-500/10 dark:text-rose-400"
+                    >
+                      <Trash2 className="size-3.5" />
                       Delete
                     </button>
                   </div>
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             ))}
-          </tbody>
-        </table>
-      </div>
+          </TableBody>
+        </Table>
+      )}
 
-      {/* edit modal */}
+      {/* Edit modal */}
       {edit && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/40 p-4" onClick={() => setEdit(null)}>
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-950/60 p-4 backdrop-blur-sm"
+          onClick={() => setEdit(null)}
+        >
           <form
             onSubmit={onSaveEdit}
-            onClick={(e) => e.stopPropagation()}
-            className="my-8 w-full max-w-lg rounded-2xl bg-white p-6"
+            onClick={(event) => event.stopPropagation()}
+            className="my-8 w-full max-w-lg overflow-hidden rounded-2xl border border-border bg-card text-card-foreground shadow-2xl animate-in-up"
           >
-            <h2 className="text-xl font-bold">Edit Service</h2>
-            <p className="text-xs text-amber-600">Note: editing sends the service back to admin approval.</p>
-            <div className="mt-4 flex flex-col gap-3">
-              <label className="text-sm font-medium">
-                Title
-                <input required value={edit.title} onChange={(e) => setEdit({ ...edit, title: e.target.value })} className={input} />
-              </label>
+            <div className="flex items-center justify-between border-b border-border/60 px-5 py-4">
+              <div>
+                <h2 className="text-base font-semibold tracking-tight">Edit service</h2>
+                <p className="text-xs text-amber-600 dark:text-amber-400">
+                  Saving sends this service back to admin approval.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEdit(null)}
+                className="flex size-8 items-center justify-center rounded-lg text-muted-foreground transition hover:bg-muted hover:text-foreground"
+                aria-label="Close"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+
+            <div className="max-h-[65vh] space-y-4 overflow-y-auto px-5 py-5">
+              <Field label="Title" htmlFor="edit-title">
+                <Input
+                  id="edit-title"
+                  required
+                  value={edit.title}
+                  onChange={(event) => setEdit({ ...edit, title: event.target.value })}
+                  className="h-10 rounded-xl"
+                />
+              </Field>
+
               <div className="grid grid-cols-2 gap-3">
-                <label className="text-sm font-medium">
-                  Category
-                  <select value={edit.category} onChange={(e) => setEdit({ ...edit, category: e.target.value })} className={input}>
-                    {CATEGORIES.map((c) => (
-                      <option key={c} value={c}>{c}</option>
+                <Field label="Category" htmlFor="edit-category">
+                  <select
+                    id="edit-category"
+                    value={edit.category}
+                    onChange={(event) => setEdit({ ...edit, category: event.target.value })}
+                    className={SELECT_CLASS}
+                  >
+                    {CATEGORIES.map((category) => (
+                      <option key={category} value={category}>
+                        {category}
+                      </option>
                     ))}
                   </select>
-                </label>
-                <label className="text-sm font-medium">
-                  Base Price (USD)
-                  <input required type="number" min="1" step="0.01" value={edit.basePrice} onChange={(e) => setEdit({ ...edit, basePrice: e.target.value })} className={input} />
-                </label>
+                </Field>
+                <Field label="Base price (USD)" htmlFor="edit-price">
+                  <Input
+                    id="edit-price"
+                    required
+                    type="number"
+                    min="1"
+                    step="0.01"
+                    value={edit.basePrice}
+                    onChange={(event) => setEdit({ ...edit, basePrice: event.target.value })}
+                    className="h-10 rounded-xl"
+                  />
+                </Field>
               </div>
-              <label className="text-sm font-medium">
-                Description
-                <textarea required rows={3} value={edit.description} onChange={(e) => setEdit({ ...edit, description: e.target.value })} className={input} />
-              </label>
+
+              <Field label="Description" htmlFor="edit-description">
+                <Textarea
+                  id="edit-description"
+                  required
+                  rows={3}
+                  value={edit.description}
+                  onChange={(event) => setEdit({ ...edit, description: event.target.value })}
+                  className="rounded-xl"
+                />
+              </Field>
+
               <div className="grid grid-cols-2 gap-3">
-                <label className="text-sm font-medium">
-                  Estimated Duration
-                  <input required value={edit.estimatedDuration} onChange={(e) => setEdit({ ...edit, estimatedDuration: e.target.value })} className={input} />
-                </label>
-                <label className="text-sm font-medium">
-                  Service Mode
-                  <select value={edit.serviceMode} onChange={(e) => setEdit({ ...edit, serviceMode: e.target.value })} className={input}>
+                <Field label="Duration" htmlFor="edit-duration">
+                  <Input
+                    id="edit-duration"
+                    required
+                    value={edit.estimatedDuration}
+                    onChange={(event) => setEdit({ ...edit, estimatedDuration: event.target.value })}
+                    className="h-10 rounded-xl"
+                  />
+                </Field>
+                <Field label="Service mode" htmlFor="edit-mode">
+                  <select
+                    id="edit-mode"
+                    value={edit.serviceMode}
+                    onChange={(event) => setEdit({ ...edit, serviceMode: event.target.value })}
+                    className={SELECT_CLASS}
+                  >
                     <option>Home Visit</option>
                     <option>Shop Drop-off</option>
                   </select>
+                </Field>
+              </div>
+
+              <Field label="Service area" htmlFor="edit-area">
+                <Input
+                  id="edit-area"
+                  required
+                  value={edit.serviceArea}
+                  onChange={(event) => setEdit({ ...edit, serviceArea: event.target.value })}
+                  className="h-10 rounded-xl"
+                />
+              </Field>
+
+              <div>
+                <p className="mb-1.5 text-sm font-medium">Service image</p>
+                <label className="group relative flex min-h-32 cursor-pointer items-center justify-center overflow-hidden rounded-xl border border-dashed border-border bg-muted/30 transition hover:border-primary/40">
+                  {edit.image ? (
+                    <>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={edit.image}
+                        alt="Service preview"
+                        className="h-32 w-full object-cover"
+                      />
+                      <span className="absolute inset-0 flex items-center justify-center gap-1.5 bg-slate-950/50 text-xs font-semibold text-white opacity-0 backdrop-blur-sm transition group-hover:opacity-100">
+                        <ImagePlus className="size-4" />
+                        Replace image
+                      </span>
+                    </>
+                  ) : (
+                    <span className="flex items-center gap-2 py-8 text-xs text-muted-foreground">
+                      <ImagePlus className="size-4" />
+                      Upload an image
+                    </span>
+                  )}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={async (event) => {
+                      const file = event.target.files?.[0];
+                      if (!file) return;
+                      try {
+                        const url = await uploadImage(file);
+                        setEdit((current) => (current ? { ...current, image: url } : current));
+                        toast.success('Image uploaded');
+                      } catch (err) {
+                        toast.error(err instanceof Error ? err.message : 'Upload failed');
+                      }
+                    }}
+                    className="sr-only"
+                  />
                 </label>
               </div>
-              <label className="text-sm font-medium">
-                Service Area
-                <input required value={edit.serviceArea} onChange={(e) => setEdit({ ...edit, serviceArea: e.target.value })} className={input} />
-              </label>
-              <label className="text-sm font-medium">
-                Image
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={async (e) => {
-                    const file = e.target.files?.[0];
-                    if (!file) return;
-                    try {
-                      const url = await uploadImage(file);
-                      setEdit((cur) => (cur ? { ...cur, image: url } : cur));
-                      toast.success('Image uploaded');
-                    } catch (err) {
-                      toast.error(err instanceof Error ? err.message : 'Upload failed');
-                    }
-                  }}
-                  className="mt-1 w-full text-sm"
-                />
-              </label>
-              {edit.image && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={edit.image} alt="preview" className="h-28 w-full max-w-xs rounded-xl object-cover" />
-              )}
-              <div className="mt-2 flex gap-3">
-                <button type="button" onClick={() => setEdit(null)} className="flex-1 rounded-lg border border-gray-300 py-2 font-semibold hover:bg-gray-50">
-                  Cancel
-                </button>
-                <button type="submit" disabled={saving} className="flex-1 rounded-lg bg-blue-600 py-2 font-semibold text-white hover:bg-blue-700 disabled:opacity-50">
-                  {saving ? 'Saving…' : 'Save Changes'}
-                </button>
-              </div>
+            </div>
+
+            <div className="flex flex-col-reverse gap-2 border-t border-border/60 bg-muted/30 px-5 py-4 sm:flex-row sm:justify-end">
+              <button
+                type="button"
+                onClick={() => setEdit(null)}
+                className="inline-flex h-10 items-center justify-center rounded-xl border border-border bg-background px-4 text-sm font-medium transition hover:bg-muted"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={saving}
+                className="inline-flex h-10 items-center justify-center rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-sm shadow-primary/25 transition hover:bg-primary/90 disabled:opacity-50"
+              >
+                {saving ? 'Saving...' : 'Save changes'}
+              </button>
             </div>
           </form>
         </div>
       )}
 
-      {/* delete confirmation modal */}
-      {deleteId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" onClick={() => setDeleteId(null)}>
-          <div className="w-full max-w-sm rounded-2xl bg-white p-6 text-center" onClick={(e) => e.stopPropagation()}>
-            <p className="text-4xl" aria-hidden>🗑️</p>
-            <h2 className="mt-2 text-lg font-bold">Delete this service?</h2>
-            <p className="mt-1 text-sm text-gray-500">This can&apos;t be undone.</p>
-            <div className="mt-5 flex gap-3">
-              <button onClick={() => setDeleteId(null)} className="flex-1 rounded-lg border border-gray-300 py-2 font-semibold hover:bg-gray-50">
-                Keep Service
-              </button>
-              <button onClick={() => onDelete(deleteId)} className="flex-1 rounded-lg bg-red-600 py-2 font-semibold text-white hover:bg-red-700">
-                Yes, Delete
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmDialog
+        open={Boolean(deleteTarget)}
+        title="Delete this service?"
+        description={
+          <>
+            <span className="font-semibold text-foreground">{deleteTarget?.title}</span> will be
+            permanently removed. This action cannot be undone.
+          </>
+        }
+        confirmLabel="Yes, delete"
+        cancelLabel="Keep service"
+        tone="danger"
+        icon={Trash2}
+        loading={deleting}
+        onConfirm={() => deleteTarget && onDelete(deleteTarget._id)}
+        onClose={() => setDeleteTarget(null)}
+      />
     </div>
   );
 }

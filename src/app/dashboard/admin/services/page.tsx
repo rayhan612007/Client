@@ -1,14 +1,26 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { api } from '@/lib/api';
-import { Service, ApprovalStatus } from '@/lib/auth-shared';
+import { Service, ApprovalStatus, APPROVAL_LABEL } from '@/lib/auth-shared';
 import { ApprovalBadge } from '@/components/badges';
+import { PageHeader } from '@/components/PageHeader';
+import { EmptyState } from '@/components/EmptyState';
+import { ConfirmDialog } from '@/components/ConfirmDialog';
+import { FilterPills } from '@/components/FilterPills';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { toast } from 'sonner';
+import { Check, ShieldCheck, XCircle } from 'lucide-react';
 
 type Filter = ApprovalStatus | 'all';
 
-/** Pending is the default filter so new services are easy to find. */
 const FILTERS: Filter[] = ['pending', 'approved', 'rejected', 'all'];
 
 export default function AdminServicesPage() {
@@ -34,7 +46,11 @@ export default function AdminServicesPage() {
       });
       toast.success(`Service ${approvalStatus}`);
       setConfirm(null);
-      setServices((cur) => cur.map((s) => (s._id === id ? { ...s, approvalStatus } : s)));
+      setServices((current) =>
+        current.map((service) =>
+          service._id === id ? { ...service, approvalStatus } : service,
+        ),
+      );
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Update failed');
     } finally {
@@ -42,155 +58,159 @@ export default function AdminServicesPage() {
     }
   }
 
-  // Show pending first whenever the full list is visible
-  const shown =
-    filter === 'all'
-      ? [...services].sort((a, b) =>
-          a.approvalStatus === b.approvalStatus ? 0 : a.approvalStatus === 'pending' ? -1 : b.approvalStatus === 'pending' ? 1 : 0,
-        )
-      : services.filter((s) => s.approvalStatus === filter);
+  const shown = useMemo(() => {
+    if (filter === 'all') {
+      return [...services].sort((a, b) =>
+        a.approvalStatus === b.approvalStatus
+          ? 0
+          : a.approvalStatus === 'pending'
+            ? -1
+            : b.approvalStatus === 'pending'
+              ? 1
+              : 0,
+      );
+    }
+    return services.filter((service) => service.approvalStatus === filter);
+  }, [services, filter]);
 
-  if (loading) {
-    return (
-      <div>
-        <h1 className="text-2xl font-bold">Service Approval</h1>
-        <div className="mt-6 h-64 animate-pulse rounded-2xl bg-gray-100" />
-      </div>
-    );
-  }
+  const pendingCount = services.filter((service) => service.approvalStatus === 'pending').length;
 
-  const pendingCount = services.filter((s) => s.approvalStatus === 'pending').length;
+  const filterOptions = FILTERS.map((value) => ({
+    value,
+    label: value === 'all' ? 'All' : APPROVAL_LABEL[value],
+    count:
+      value === 'all'
+        ? services.length
+        : services.filter((service) => service.approvalStatus === value).length,
+  }));
 
   return (
-    <div>
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <h1 className="text-2xl font-bold">Service Approval</h1>
-        {pendingCount > 0 && (
-          <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700">
-            {pendingCount} awaiting review
-          </span>
-        )}
-      </div>
+    <div className="space-y-6">
+      <PageHeader
+        eyebrow="Admin workspace"
+        title="Service approval"
+        description="Approve verified listings or reject services that do not meet platform standards."
+        icon={ShieldCheck}
+        actions={
+          pendingCount > 0 ? (
+            <span className="inline-flex h-10 items-center rounded-xl bg-amber-500/10 px-3 text-xs font-semibold text-amber-700 ring-1 ring-amber-500/20 ring-inset dark:text-amber-300">
+              {pendingCount} awaiting review
+            </span>
+          ) : (
+            <span className="inline-flex h-10 items-center rounded-xl bg-emerald-500/10 px-3 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-500/20 ring-inset dark:text-emerald-300">
+              All caught up
+            </span>
+          )
+        }
+      />
 
-      {/* approval status filter */}
-      <div className="mt-4 flex flex-wrap gap-2">
-        {FILTERS.map((f) => (
-          <button
-            key={f}
-            onClick={() => setFilter(f)}
-            className={`rounded-full px-3 py-1.5 text-xs font-semibold capitalize ${
-              filter === f ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 ring-1 ring-gray-200 hover:bg-gray-50'
-            }`}
-          >
-            {f}
-          </button>
-        ))}
-      </div>
+      <FilterPills options={filterOptions} value={filter} onChange={setFilter} />
 
-      {shown.length === 0 ? (
-        <div className="mt-6 rounded-2xl bg-white p-12 text-center">
-          <p className="text-5xl" aria-hidden>✅</p>
-          <p className="mt-3 font-semibold">No {filter === 'all' ? '' : filter} services</p>
-          <p className="mt-1 text-sm text-gray-500">
-            {filter === 'pending' ? 'All caught up — nothing is waiting for approval.' : 'Services will appear here once they match this status.'}
-          </p>
-        </div>
+      {loading ? (
+        <div className="h-64 animate-pulse rounded-2xl bg-muted" />
+      ) : shown.length === 0 ? (
+        <EmptyState
+          icon={ShieldCheck}
+          title={`No ${filter === 'all' ? '' : APPROVAL_LABEL[filter]} services`}
+          description={
+            filter === 'pending'
+              ? 'All caught up — nothing is waiting for approval right now.'
+              : 'Services will appear here once they match this status.'
+          }
+        />
       ) : (
-        <div className="mt-6 overflow-x-auto rounded-2xl border border-gray-200 bg-white">
-          <table className="w-full min-w-[900px] text-left text-sm">
-            <thead className="border-b border-gray-200 bg-gray-50 text-xs uppercase text-gray-500">
-              <tr>
-                <th className="px-4 py-3">Service</th>
-                <th className="px-4 py-3">Category</th>
-                <th className="px-4 py-3">Technician</th>
-                <th className="px-4 py-3">Price</th>
-                <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3">Submitted</th>
-                <th className="px-4 py-3">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {shown.map((s) => (
-                <tr key={s._id} className="border-b border-gray-100 last:border-0">
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-3">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={s.image} alt="" className="h-10 w-14 rounded-lg object-cover" />
-                      <div>
-                        <p className="font-medium">{s.title}</p>
-                        <p className="text-xs text-gray-400">
-                          {s.serviceMode} · {s.serviceArea}
-                        </p>
-                      </div>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Service</TableHead>
+              <TableHead>Category</TableHead>
+              <TableHead>Technician</TableHead>
+              <TableHead>Price</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Submitted</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {shown.map((service) => (
+              <TableRow key={service._id}>
+                <TableCell>
+                  <div className="flex min-w-[220px] items-center gap-3">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={service.image}
+                      alt=""
+                      className="h-11 w-14 rounded-lg object-cover ring-1 ring-border"
+                    />
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-semibold">{service.title}</p>
+                      <p className="truncate text-xs text-muted-foreground">
+                        {service.serviceMode} · {service.serviceArea}
+                      </p>
                     </div>
-                  </td>
-                  <td className="px-4 py-3">{s.category}</td>
-                  <td className="px-4 py-3">
-                    {s.technicianName}
-                    <br />
-                    <span className="text-xs text-gray-400">{s.technicianEmail}</span>
-                  </td>
-                  <td className="px-4 py-3 font-semibold">${s.basePrice}</td>
-                  <td className="px-4 py-3">
-                    <ApprovalBadge status={s.approvalStatus} />
-                  </td>
-                  <td className="px-4 py-3 text-gray-500">{new Date(s.createdAt).toLocaleDateString()}</td>
-                  <td className="px-4 py-3">
-                    <div className="flex gap-2">
-                      {s.approvalStatus !== 'approved' && (
-                        <button
-                          disabled={busyId === s._id}
-                          onClick={() => decide(s._id, 'approved')}
-                          className="rounded-lg bg-green-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-green-700 disabled:opacity-50"
-                        >
-                          Approve
-                        </button>
-                      )}
-                      {s.approvalStatus !== 'rejected' && (
-                        <button
-                          disabled={busyId === s._id}
-                          onClick={() => setConfirm({ id: s._id, title: s.title })}
-                          className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-50 disabled:opacity-50"
-                        >
-                          Reject
-                        </button>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                  </div>
+                </TableCell>
+                <TableCell className="text-sm text-foreground/80">{service.category}</TableCell>
+                <TableCell>
+                  <p className="text-sm text-foreground/80">{service.technicianName}</p>
+                  <p className="truncate text-xs text-muted-foreground">
+                    {service.technicianEmail}
+                  </p>
+                </TableCell>
+                <TableCell className="font-semibold tabular-nums">${service.basePrice}</TableCell>
+                <TableCell>
+                  <ApprovalBadge status={service.approvalStatus} />
+                </TableCell>
+                <TableCell className="text-sm text-muted-foreground">
+                  {new Date(service.createdAt).toLocaleDateString()}
+                </TableCell>
+                <TableCell>
+                  <div className="flex justify-end gap-2">
+                    {service.approvalStatus !== 'approved' && (
+                      <button
+                        disabled={busyId === service._id}
+                        onClick={() => decide(service._id, 'approved')}
+                        className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-emerald-600 px-2.5 text-xs font-semibold text-white shadow-sm shadow-emerald-600/25 transition hover:bg-emerald-500 disabled:opacity-50"
+                      >
+                        <Check className="size-3.5" />
+                        Approve
+                      </button>
+                    )}
+                    {service.approvalStatus !== 'rejected' && (
+                      <button
+                        disabled={busyId === service._id}
+                        onClick={() => setConfirm({ id: service._id, title: service.title })}
+                        className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-rose-500/25 px-2.5 text-xs font-semibold text-rose-600 transition hover:bg-rose-500/10 disabled:opacity-50 dark:text-rose-400"
+                      >
+                        <XCircle className="size-3.5" />
+                        Reject
+                      </button>
+                    )}
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       )}
 
-      {/* reject confirmation modal */}
-      {confirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" onClick={() => setConfirm(null)}>
-          <div className="w-full max-w-sm rounded-2xl bg-white p-6 text-center" onClick={(e) => e.stopPropagation()}>
-            <p className="text-4xl" aria-hidden>🚫</p>
-            <h2 className="mt-2 text-lg font-bold">Reject this service?</h2>
-            <p className="mt-1 text-sm text-gray-500">
-              <span className="font-semibold">{confirm.title}</span> will not appear on public pages.
-            </p>
-            <div className="mt-5 flex gap-3">
-              <button
-                onClick={() => setConfirm(null)}
-                className="flex-1 rounded-lg border border-gray-300 py-2 font-semibold hover:bg-gray-50"
-              >
-                Keep Reviewing
-              </button>
-              <button
-                disabled={busyId === confirm.id}
-                onClick={() => decide(confirm.id, 'rejected')}
-                className="flex-1 rounded-lg bg-red-600 py-2 font-semibold text-white hover:bg-red-700 disabled:opacity-50"
-              >
-                {busyId === confirm.id ? 'Rejecting…' : 'Yes, Reject'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmDialog
+        open={Boolean(confirm)}
+        title="Reject this service?"
+        description={
+          <>
+            <span className="font-semibold text-foreground">{confirm?.title}</span> will be hidden
+            from public pages. The technician can edit and resubmit it for review.
+          </>
+        }
+        confirmLabel="Yes, reject"
+        cancelLabel="Keep reviewing"
+        tone="danger"
+        icon={XCircle}
+        loading={Boolean(confirm) && busyId === confirm?.id}
+        onConfirm={() => confirm && decide(confirm.id, 'rejected')}
+        onClose={() => setConfirm(null)}
+      />
     </div>
   );
 }

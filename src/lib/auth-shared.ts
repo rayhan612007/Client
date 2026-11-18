@@ -76,6 +76,22 @@ export interface AppUser {
 
 export const CATEGORIES = ['Smartphone', 'Laptop & PC', 'AC', 'Refrigerator', 'TV', 'Washing Machine', 'Electrical'];
 
+/** Human-friendly labels used across badges, filters and tables */
+export const STATUS_LABEL: Record<BookingStatus, string> = {
+  requested: 'Requested',
+  accepted: 'Accepted',
+  'in-progress': 'In Progress',
+  completed: 'Completed',
+  rejected: 'Rejected',
+  cancelled: 'Cancelled',
+};
+
+export const APPROVAL_LABEL: Record<ApprovalStatus, string> = {
+  pending: 'Pending',
+  approved: 'Approved',
+  rejected: 'Rejected',
+};
+
 /** Fixed status badge colors across all dashboards (per spec) */
 export const STATUS_BADGE: Record<BookingStatus, string> = {
   requested: 'bg-blue-100 text-blue-700',

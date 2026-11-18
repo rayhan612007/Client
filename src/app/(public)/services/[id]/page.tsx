@@ -93,7 +93,7 @@ function RequestFormModal({ service, onClose }: { service: Service; onClose: () 
               <input
                 readOnly
                 value={session?.user?.name ?? ''}
-                className="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-600 cursor-not-allowed"
+                className="mt-1 w-full rounded-xl border border-border bg-muted px-3 py-2 text-xs text-muted-foreground cursor-not-allowed"
               />
             </label>
             <label className="text-xs font-semibold text-slate-700">
@@ -101,7 +101,7 @@ function RequestFormModal({ service, onClose }: { service: Service; onClose: () 
               <input
                 readOnly
                 value={session?.user?.email ?? ''}
-                className="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-600 cursor-not-allowed"
+                className="mt-1 w-full rounded-xl border border-border bg-muted px-3 py-2 text-xs text-muted-foreground cursor-not-allowed"
               />
             </label>
           </div>
@@ -279,7 +279,7 @@ export default function ServiceDetailsPage() {
         {/* Left Column: Image, Info & Description */}
         <div className="lg:col-span-8 flex flex-col gap-6">
           {/* Main Service Image Banner */}
-          <div className="relative overflow-hidden rounded-3xl border border-slate-200 bg-slate-100 shadow-xs">
+          <div className="relative overflow-hidden rounded-3xl border border-slate-200 bg-slate-100 shadow-xs" data-aos="fade-up">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={service.image}
@@ -305,7 +305,7 @@ export default function ServiceDetailsPage() {
           </div>
 
           {/* Service Title & Metadata */}
-          <div>
+          <div data-aos="fade-up" data-aos-delay="60">
             <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">
               {service.title}
             </h1>
@@ -326,7 +326,7 @@ export default function ServiceDetailsPage() {
           </div>
 
           {/* Description Section */}
-          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-xs">
+          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-xs" data-aos="fade-up">
             <h2 className="text-base font-bold text-slate-900">What This Repair Service Includes</h2>
             <p className="mt-3 text-sm leading-relaxed text-slate-600 whitespace-pre-line">
               {service.description}
@@ -334,7 +334,7 @@ export default function ServiceDetailsPage() {
           </div>
 
           {/* Technician Profile Card */}
-          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-xs">
+          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-xs" data-aos="fade-up">
             <div className="flex items-center gap-4">
               <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-lg font-bold text-white shadow-md">
                 {service.technicianName?.charAt(0) || 'T'}
@@ -355,7 +355,7 @@ export default function ServiceDetailsPage() {
 
         {/* Right Sticky Booking Box */}
         <div className="lg:col-span-4 sticky top-20">
-          <div className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-7 shadow-lg shadow-slate-200/50">
+          <div className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-7 shadow-lg shadow-slate-200/50" data-aos="fade-left">
             <div className="border-b border-slate-100 pb-5">
               <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
                 Starting Base Price

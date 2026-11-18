@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Suspense, useCallback, useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import { Service, CATEGORIES } from '@/lib/auth-shared';
 import {
@@ -105,7 +105,7 @@ function ServicesList() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search by title or category..."
-              className="w-full rounded-xl border border-slate-200 bg-slate-50/70 py-2.5 pl-10 pr-3 text-sm text-slate-800 placeholder-slate-400 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-100 transition"
+              className="w-full rounded-xl border border-input bg-muted/40 py-2.5 pl-10 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-ring focus:bg-card focus:outline-none focus:ring-2 focus:ring-ring/20 transition"
             />
           </div>
 
@@ -114,7 +114,7 @@ function ServicesList() {
             <select
               value={category}
               onChange={(e) => setParam('category', e.target.value)}
-              className="w-full rounded-xl border border-slate-200 bg-slate-50/70 py-2.5 px-3 text-sm text-slate-700 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-100 transition"
+              className="w-full rounded-xl border border-input bg-muted/40 py-2.5 px-3 text-sm text-foreground focus:border-ring focus:bg-card focus:outline-none focus:ring-2 focus:ring-ring/20 transition"
             >
               <option value="">All Categories</option>
               {CATEGORIES.map((c) => (
@@ -130,7 +130,7 @@ function ServicesList() {
             <select
               value={serviceMode}
               onChange={(e) => setParam('serviceMode', e.target.value)}
-              className="w-full rounded-xl border border-slate-200 bg-slate-50/70 py-2.5 px-3 text-sm text-slate-700 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-100 transition"
+              className="w-full rounded-xl border border-input bg-muted/40 py-2.5 px-3 text-sm text-foreground focus:border-ring focus:bg-card focus:outline-none focus:ring-2 focus:ring-ring/20 transition"
             >
               <option value="">Any Service Mode</option>
               <option value="Home Visit">Home Visit</option>
@@ -143,7 +143,7 @@ function ServicesList() {
             <select
               value={sort}
               onChange={(e) => setParam('sort', e.target.value === 'newest' ? '' : e.target.value)}
-              className="w-full rounded-xl border border-slate-200 bg-slate-50/70 py-2.5 px-3 text-sm text-slate-700 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-100 transition"
+              className="w-full rounded-xl border border-input bg-muted/40 py-2.5 px-3 text-sm text-foreground focus:border-ring focus:bg-card focus:outline-none focus:ring-2 focus:ring-ring/20 transition"
             >
               <option value="">Newest</option>
               <option value="price-asc">Price: Low to High</option>

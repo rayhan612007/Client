@@ -27,7 +27,7 @@ export default function Footer() {
     <footer className="border-t border-slate-800 bg-slate-950 text-slate-400">
       {/* Trust & Guarantee Strip */}
       <div className="border-b border-slate-800/80 bg-slate-900/60 py-8">
-        <div className="mx-auto grid max-w-7xl gap-6 px-4 sm:grid-cols-2 lg:grid-cols-4 sm:px-6">
+        <div className="mx-auto grid max-w-7xl gap-6 px-4 sm:grid-cols-2 lg:grid-cols-4 sm:px-6" data-aos="fade-up">
           <div className="flex items-center gap-3.5">
             <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-500/10 text-blue-400">
               <ShieldCheckIcon className="h-6 w-6" />
@@ -71,7 +71,7 @@ export default function Footer() {
       </div>
 
       {/* Main Footer Links */}
-      <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:grid-cols-2 lg:grid-cols-5 sm:px-6">
+      <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:grid-cols-2 lg:grid-cols-5 sm:px-6" data-aos="fade-up">
         {/* Brand Info */}
         <div className="lg:col-span-2">
           <Link href="/" className="inline-flex items-center gap-2.5">

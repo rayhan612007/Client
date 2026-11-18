@@ -279,7 +279,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="bg-slate-50/50 text-slate-900">
+    <div className="bg-background text-foreground">
       {/* =========================================================================
           SECTION 1: HERO SECTION WITH INTERACTIVE SEARCH & TRUST PANEL
          ========================================================================= */}
@@ -332,7 +332,7 @@ export default function HomePage() {
               {/* Search card */}
               <form
                 onSubmit={handleSearchSubmit}
-                className="mt-8 rounded-2xl bg-white p-2.5 shadow-2xl shadow-blue-950/40 ring-1 ring-white/20"
+                className="mt-8 rounded-2xl border border-white/10 bg-white/[0.06] p-2 shadow-2xl shadow-blue-950/40 backdrop-blur-xl"
               >
                 <div className="grid gap-2 sm:grid-cols-12">
                   <div className="relative sm:col-span-4">
@@ -343,7 +343,7 @@ export default function HomePage() {
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       aria-label="Search services"
-                      className="h-11 w-full rounded-xl border border-transparent bg-slate-100 pr-3 pl-10 text-sm text-slate-900 placeholder:text-slate-500 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20"
+                      className="h-11 w-full rounded-xl border border-white/10 bg-white/[0.04] pr-3 pl-10 text-sm text-white placeholder:text-slate-400 outline-none transition hover:bg-white/[0.07] focus:border-blue-400/60 focus:bg-white/10 focus:ring-2 focus:ring-blue-400/20"
                     />
                   </div>
 
@@ -352,7 +352,7 @@ export default function HomePage() {
                       value={selectedCategory}
                       onChange={(e) => setSelectedCategory(e.target.value)}
                       aria-label="Filter by category"
-                      className="h-11 w-full rounded-xl border border-transparent bg-slate-100 px-3 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20"
+                      className="h-11 w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 text-sm text-slate-200 outline-none transition hover:bg-white/[0.07] focus:border-blue-400/60 focus:bg-white/10 focus:ring-2 focus:ring-blue-400/20 [&>option]:bg-slate-900 [&>option]:text-slate-100"
                     >
                       <option value="">All categories</option>
                       {CATEGORIES.map((c) => (
@@ -368,7 +368,7 @@ export default function HomePage() {
                       value={selectedMode}
                       onChange={(e) => setSelectedMode(e.target.value)}
                       aria-label="Filter by service mode"
-                      className="h-11 w-full rounded-xl border border-transparent bg-slate-100 px-3 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20"
+                      className="h-11 w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 text-sm text-slate-200 outline-none transition hover:bg-white/[0.07] focus:border-blue-400/60 focus:bg-white/10 focus:ring-2 focus:ring-blue-400/20 [&>option]:bg-slate-900 [&>option]:text-slate-100"
                     >
                       <option value="">Any mode</option>
                       <option value="Home Visit">Home Visit</option>
@@ -379,7 +379,7 @@ export default function HomePage() {
                   <div className="sm:col-span-2">
                     <button
                       type="submit"
-                      className="flex h-11 w-full items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-3 text-sm font-semibold text-white shadow-lg shadow-blue-600/25 transition hover:from-blue-500 hover:to-indigo-500 focus:outline-none focus:ring-2 focus:ring-blue-400/60 focus:ring-offset-2 focus:ring-offset-white"
+                      className="flex h-11 w-full items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-3 text-sm font-semibold text-white shadow-lg shadow-blue-600/25 transition hover:from-blue-500 hover:to-indigo-500 focus:outline-none focus:ring-2 focus:ring-blue-400/60 focus:ring-offset-2 focus:ring-offset-[#070c1a]"
                     >
                       <span>Search</span>
                       <ArrowRightIcon className="h-4 w-4" />
@@ -390,7 +390,7 @@ export default function HomePage() {
 
               {/* Trending searches */}
               <div className="mt-4 flex flex-wrap items-center justify-center gap-2 text-xs">
-                <span className="text-slate-500">Trending:</span>
+                <span className="text-slate-400">Trending:</span>
                 {[
                   { label: 'iPhone Screen', cat: 'Smartphone' },
                   { label: 'MacBook Motherboard', cat: 'Laptop & PC' },
@@ -447,7 +447,7 @@ export default function HomePage() {
             {BRANDS.map((b) => (
               <div
                 key={b.name}
-                className="flex items-center gap-2 rounded-xl border border-slate-200/60 bg-slate-50/60 px-3.5 py-1.5 text-xs font-semibold text-slate-700 shadow-xs hover:border-blue-400 hover:text-blue-600 transition"
+                className="flex items-center gap-2 rounded-xl border border-border/60 bg-muted/40 px-3.5 py-1.5 text-xs font-semibold text-foreground/80 shadow-xs hover:border-blue-400 hover:text-blue-600 transition"
               >
                 <span>{b.name}</span>
                 <span className="text-[10px] text-slate-400 font-normal">({b.tag})</span>
@@ -461,7 +461,7 @@ export default function HomePage() {
           SECTION 3: POPULAR CATEGORIES (ALL 7 SPEC CATEGORIES)
          ========================================================================= */}
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-20">
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+        <div data-aos="fade-up" className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
           <div>
             <div className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
               <WrenchIcon className="h-3.5 w-3.5" />
@@ -485,12 +485,14 @@ export default function HomePage() {
 
         {/* Categories Grid */}
         <div className="mt-10 grid gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-          {CATEGORY_META.map((cat) => {
+          {CATEGORY_META.map((cat, index) => {
             const Icon = cat.icon;
             return (
               <Link
                 key={cat.name}
                 href={`/services?category=${encodeURIComponent(cat.name)}`}
+                data-aos="fade-up"
+                data-aos-delay={index * 60}
                 className="group relative flex flex-col justify-between rounded-3xl border border-slate-200/80 bg-white p-6 shadow-xs hover:border-blue-400 hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-300"
               >
                 <div>
@@ -520,7 +522,9 @@ export default function HomePage() {
           {/* Bonus "Can't Find Yours?" Card */}
           <Link
             href="/services"
-            className="flex flex-col justify-between rounded-3xl border border-dashed border-slate-300 bg-slate-50/80 p-6 hover:border-blue-400 hover:bg-blue-50/40 transition"
+            data-aos="fade-up"
+            data-aos-delay={CATEGORY_META.length * 60}
+            className="flex flex-col justify-between rounded-3xl border border-dashed border-border bg-muted/40 p-6 hover:border-blue-400 hover:bg-blue-50/40 dark:hover:bg-blue-500/10 transition"
           >
             <div>
               <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-200 text-slate-600">
@@ -544,7 +548,7 @@ export default function HomePage() {
          ========================================================================= */}
       <section className="bg-white py-16 sm:py-20 border-y border-slate-200/80">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+          <div data-aos="fade-up" className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
             <div>
               <div className="inline-flex items-center gap-1.5 rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700">
                 <SparklesIcon className="h-3.5 w-3.5" />
@@ -582,10 +586,12 @@ export default function HomePage() {
             </div>
           ) : (
             <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {featured.map((s) => (
+              {featured.map((s, index) => (
                 <Link
                   key={s._id}
                   href={`/services/${s._id}`}
+                  data-aos="fade-up"
+                  data-aos-delay={(index % 3) * 80}
                   className="group flex flex-col h-full overflow-hidden rounded-3xl border border-slate-200/90 bg-white shadow-xs hover:border-blue-400 hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300"
                 >
                   {/* Service Banner Image */}
@@ -678,7 +684,7 @@ export default function HomePage() {
           SECTION 5: HOW FIXMATE WORKS (4-STEP VISUAL WORKFLOW)
          ========================================================================= */}
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-24">
-        <div className="text-center">
+        <div data-aos="fade-up" className="text-center">
           <div className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
             <ClockIcon className="h-3.5 w-3.5" />
             <span>Simple & Trackable Flow</span>
@@ -693,9 +699,11 @@ export default function HomePage() {
 
         {/* 4-Step Cards */}
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {STEPS.map((s) => (
+          {STEPS.map((s, index) => (
             <div
               key={s.step}
+              data-aos="fade-up"
+              data-aos-delay={index * 70}
               className="relative flex flex-col justify-between rounded-3xl border border-slate-200/80 bg-white p-7 shadow-xs hover:border-blue-400 hover:shadow-lg transition"
             >
               <div>
@@ -718,7 +726,7 @@ export default function HomePage() {
         </div>
 
         {/* Escrow Banner Note */}
-        <div className="mt-10 rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4 text-center text-xs text-emerald-800 font-medium">
+        <div data-aos="fade-up" className="mt-10 rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4 text-center text-xs text-emerald-800 font-medium">
           🛡️ <strong>FixMate Promise:</strong> You never hand over payment until the technician completes the repair and you verify your device works properly.
         </div>
       </section>
@@ -728,7 +736,7 @@ export default function HomePage() {
          ========================================================================= */}
       <section className="bg-slate-900 text-white py-16 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <div className="text-center">
+          <div data-aos="fade-up" className="text-center">
             <div className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3.5 py-1 text-xs font-semibold text-cyan-300 backdrop-blur-md">
               <SparklesIcon className="h-3.5 w-3.5" />
               <span>Instant Problem Diagnostic</span>
@@ -744,7 +752,7 @@ export default function HomePage() {
           {/* Interactive Picker */}
           <div className="mt-10 grid gap-6 lg:grid-cols-12 items-start">
             {/* Left Button Pills */}
-            <div className="lg:col-span-5 flex flex-col gap-2.5">
+            <div className="lg:col-span-5 flex flex-col gap-2.5" data-aos="fade-right">
               {DIAGNOSTIC_ISSUES.map((issue) => {
                 const active = activeIssue.id === issue.id;
                 return (
@@ -770,7 +778,7 @@ export default function HomePage() {
             </div>
 
             {/* Right Diagnostic Result Card */}
-            <div className="lg:col-span-7 rounded-3xl border border-white/10 bg-slate-950/90 p-8 backdrop-blur-xl">
+            <div className="lg:col-span-7 rounded-3xl border border-white/10 bg-slate-950/90 p-8 backdrop-blur-xl" data-aos="fade-left">
               <div className="flex items-center justify-between border-b border-white/10 pb-4">
                 <div>
                   <span className="text-xs font-semibold uppercase tracking-wider text-blue-400">
@@ -835,7 +843,7 @@ export default function HomePage() {
           SECTION 7: WHY CHOOSE FIXMATE (6 CORE TRUST & QUALITY PILLARS)
          ========================================================================= */}
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-24">
-        <div className="text-center">
+        <div data-aos="fade-up" className="text-center">
           <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
             <ShieldCheckIcon className="h-3.5 w-3.5" />
             <span>Built On Complete Trust</span>
@@ -849,11 +857,13 @@ export default function HomePage() {
         </div>
 
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {TRUST_POINTS.map((item) => {
+          {TRUST_POINTS.map((item, index) => {
             const Icon = item.icon;
             return (
               <div
                 key={item.title}
+                data-aos="fade-up"
+                data-aos-delay={(index % 3) * 70}
                 className="flex flex-col justify-between rounded-3xl border border-slate-200/80 bg-white p-7 shadow-xs hover:border-blue-400 hover:shadow-lg transition"
               >
                 <div>
@@ -884,7 +894,7 @@ export default function HomePage() {
          ========================================================================= */}
       <section className="bg-white py-16 sm:py-20 border-t border-slate-200/80">
         <div className="mx-auto max-w-4xl px-4 sm:px-6">
-          <div className="text-center">
+          <div data-aos="fade-up" className="text-center">
             <div className="inline-flex items-center gap-1.5 rounded-full bg-purple-50 px-3 py-1 text-xs font-semibold text-purple-700">
               <HelpCircleIcon className="h-3.5 w-3.5" />
               <span>Got Questions?</span>
@@ -903,7 +913,9 @@ export default function HomePage() {
               return (
                 <div
                   key={index}
-                  className="rounded-2xl border border-slate-200/90 bg-slate-50/50 overflow-hidden transition"
+                  data-aos="fade-up"
+                  data-aos-delay={Math.min(index, 5) * 40}
+                  className="rounded-2xl border border-border/90 bg-muted/40 overflow-hidden transition"
                 >
                   <button
                     onClick={() => setOpenFaqIndex(isOpen ? null : index)}
@@ -932,7 +944,10 @@ export default function HomePage() {
           SECTION 11: DUAL MARKETPLACE CTA (BECOME A TECHNICIAN PARTNER)
          ========================================================================= */}
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-20">
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 p-8 sm:p-12 text-white shadow-xl">
+        <div
+          data-aos="fade-up"
+          className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 p-8 sm:p-12 text-white shadow-xl"
+        >
           <div className="pointer-events-none absolute -right-20 -top-20 h-80 w-80 rounded-full bg-blue-600/20 blur-[100px]" />
 
           <div className="relative grid items-center gap-8 lg:grid-cols-12">
@@ -986,7 +1001,7 @@ export default function HomePage() {
           SECTION 12: FINAL CONVERSION BANNER (READY TO REPAIR?)
          ========================================================================= */}
       <section className="bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 py-16 text-white text-center">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6">
+        <div data-aos="fade-up" className="mx-auto max-w-4xl px-4 sm:px-6">
           <h2 className="text-3xl font-extrabold sm:text-4xl tracking-tight">
             Ready to Get Your Device Restored Today?
           </h2>
