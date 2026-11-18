@@ -22,184 +22,202 @@ const CATEGORIES = [
   'Electrical',
 ];
 
+const PLATFORM_LINKS = [
+  { href: '/', label: 'Home' },
+  { href: '/services', label: 'Browse Services' },
+  { href: '/about', label: 'How It Works' },
+  { href: '/sign-up', label: 'Become a Technician' },
+  { href: '/sign-in', label: 'Sign In to Account' },
+];
+
+const TRUST = [
+  {
+    icon: ShieldCheckIcon,
+    title: '100% Verified Techs',
+    description: 'Every specialist is ID and skill verified',
+    tile: 'bg-blue-500/10 text-blue-600 dark:text-blue-400',
+  },
+  {
+    icon: DollarSignIcon,
+    title: 'Pay After Completion',
+    description: 'Zero upfront fees; pay only when satisfied',
+    tile: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
+  },
+  {
+    icon: ClockIcon,
+    title: 'Fast Response Times',
+    description: 'Same-day inspection & rapid turnaround',
+    tile: 'bg-amber-500/10 text-amber-600 dark:text-amber-400',
+  },
+  {
+    icon: WrenchIcon,
+    title: '30-Day Service Warranty',
+    description: 'Guaranteed parts and reliable workmanship',
+    tile: 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400',
+  },
+];
+
+const SOCIALS = [
+  { href: 'https://x.com', label: 'X (formerly Twitter)', icon: XIcon },
+  { href: 'https://facebook.com', label: 'Facebook', icon: FacebookIcon },
+  { href: 'https://linkedin.com', label: 'LinkedIn', icon: LinkedinIcon },
+];
+
 export default function Footer() {
   return (
-    <footer className="border-t border-slate-800 bg-slate-950 text-slate-400">
+    <footer className="border-t border-border bg-card text-muted-foreground">
       {/* Trust & Guarantee Strip */}
-      <div className="border-b border-slate-800/80 bg-slate-900/60 py-8">
-        <div className="mx-auto grid max-w-7xl gap-6 px-4 sm:grid-cols-2 lg:grid-cols-4 sm:px-6" data-aos="fade-up">
-          <div className="flex items-center gap-3.5">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-500/10 text-blue-400">
-              <ShieldCheckIcon className="h-6 w-6" />
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-white">100% Verified Techs</p>
-              <p className="text-xs text-slate-400">Every specialist is ID and skill verified</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3.5">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400">
-              <DollarSignIcon className="h-6 w-6" />
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-white">Pay After Completion</p>
-              <p className="text-xs text-slate-400">Zero upfront fees; pay only when satisfied</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3.5">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 text-amber-400">
-              <ClockIcon className="h-6 w-6" />
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-white">Fast Response Times</p>
-              <p className="text-xs text-slate-400">Same-day inspection & rapid turnaround</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3.5">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-400">
-              <WrenchIcon className="h-6 w-6" />
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-white">30-Day Service Warranty</p>
-              <p className="text-xs text-slate-400">Guaranteed parts and reliable workmanship</p>
-            </div>
-          </div>
+      <div className="border-b border-border bg-muted/40">
+        <div className="mx-auto grid max-w-7xl gap-6 px-4 py-8 sm:grid-cols-2 lg:grid-cols-4 sm:px-6">
+          {TRUST.map((item, index) => {
+            const Icon = item.icon;
+            return (
+              <div
+                key={item.title}
+                className="flex items-center gap-3.5"
+                data-aos="fade-up"
+                data-aos-delay={index * 70}
+              >
+                <div
+                  className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${item.tile}`}
+                >
+                  <Icon className="h-6 w-6" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-foreground">{item.title}</p>
+                  <p className="text-xs text-muted-foreground">{item.description}</p>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
 
       {/* Main Footer Links */}
-      <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:grid-cols-2 lg:grid-cols-5 sm:px-6" data-aos="fade-up">
-        {/* Brand Info */}
-        <div className="lg:col-span-2">
-          <Link href="/" className="inline-flex items-center gap-2.5">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 text-white shadow-md shadow-blue-500/20">
-              <WrenchIcon className="h-5 w-5 text-white" />
+      <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-12">
+          {/* Brand Info */}
+          <div className="lg:col-span-4" data-aos="fade-up">
+            <Link href="/" className="inline-flex items-center gap-2.5">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 text-white shadow-md shadow-blue-500/20">
+                <WrenchIcon className="h-5 w-5 text-white" />
+              </span>
+              <span className="text-xl font-bold tracking-tight text-foreground">
+                Fix<span className="text-primary">Mate</span>
+              </span>
+            </Link>
+            <p className="mt-3.5 max-w-sm text-sm leading-relaxed text-muted-foreground">
+              FixMate is Bangladesh&apos;s smart on-demand repair service platform. We connect
+              device owners with certified technicians for transparent, tracked, and guaranteed
+              repairs with zero upfront risk.
+            </p>
+            <div className="mt-5 flex items-center gap-3">
+              {SOCIALS.map((social) => {
+                const Icon = social.icon;
+                return (
+                  <a
+                    key={social.label}
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={social.label}
+                    className="flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-background text-muted-foreground transition hover:border-primary/40 hover:text-foreground"
+                  >
+                    <Icon className="h-4 w-4" />
+                  </a>
+                );
+              })}
             </div>
-            <span className="text-xl font-bold tracking-tight text-white">
-              Fix<span className="text-blue-500">Mate</span>
-            </span>
-          </Link>
-          <p className="mt-3.5 max-w-sm text-sm leading-relaxed text-slate-400">
-            FixMate is Bangladesh&apos;s smart on-demand repair service platform. We connect device owners with certified technicians for transparent, tracked, and guaranteed repairs with zero upfront risk.
-          </p>
-          <div className="mt-5 flex items-center gap-3">
-            <a
-              href="https://x.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="X (formerly Twitter)"
-              className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-800 bg-slate-900 text-slate-400 hover:border-slate-700 hover:text-white transition"
-            >
-              <XIcon className="h-4 w-4" />
-            </a>
-            <a
-              href="https://facebook.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Facebook"
-              className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-800 bg-slate-900 text-slate-400 hover:border-slate-700 hover:text-white transition"
-            >
-              <FacebookIcon className="h-4 w-4" />
-            </a>
-            <a
-              href="https://linkedin.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="LinkedIn"
-              className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-800 bg-slate-900 text-slate-400 hover:border-slate-700 hover:text-white transition"
-            >
-              <LinkedinIcon className="h-4 w-4" />
-            </a>
           </div>
-        </div>
 
-        {/* Quick Links */}
-        <div>
-          <p className="text-sm font-semibold tracking-wide text-white uppercase">Platform</p>
-          <ul className="mt-4 flex flex-col gap-2.5 text-sm">
-            <li>
-              <Link href="/" className="hover:text-white transition">
-                Home
-              </Link>
-            </li>
-            <li>
-              <Link href="/services" className="hover:text-white transition">
-                Browse Services
-              </Link>
-            </li>
-            <li>
-              <Link href="/about" className="hover:text-white transition">
-                How It Works
-              </Link>
-            </li>
-            <li>
-              <Link href="/sign-up" className="hover:text-white transition">
-                Become a Technician
-              </Link>
-            </li>
-            <li>
-              <Link href="/sign-in" className="hover:text-white transition">
-                Sign In to Account
-              </Link>
-            </li>
-          </ul>
-        </div>
+          {/* Quick Links */}
+          <div className="lg:col-span-2" data-aos="fade-up" data-aos-delay="70">
+            <p className="text-sm font-semibold tracking-wide text-foreground uppercase">
+              Platform
+            </p>
+            <ul className="mt-4 flex flex-col gap-2.5 text-sm">
+              {PLATFORM_LINKS.map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href} className="transition hover:text-foreground">
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-        {/* Popular Categories */}
-        <div>
-          <p className="text-sm font-semibold tracking-wide text-white uppercase">Repair Categories</p>
-          <ul className="mt-4 flex flex-col gap-2.5 text-sm">
-            {CATEGORIES.map((c) => (
-              <li key={c}>
-                <Link
-                  href={`/services?category=${encodeURIComponent(c)}`}
-                  className="hover:text-white transition"
-                >
-                  {c}
-                </Link>
+          {/* Popular Categories */}
+          <div className="lg:col-span-3" data-aos="fade-up" data-aos-delay="140">
+            <p className="text-sm font-semibold tracking-wide text-foreground uppercase">
+              Repair Categories
+            </p>
+            <ul className="mt-4 flex flex-col gap-2.5 text-sm">
+              {CATEGORIES.map((category) => (
+                <li key={category}>
+                  <Link
+                    href={`/services?category=${encodeURIComponent(category)}`}
+                    className="transition hover:text-foreground"
+                  >
+                    {category}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Contact Info */}
+          <div className="lg:col-span-3" data-aos="fade-up" data-aos-delay="210">
+            <p className="text-sm font-semibold tracking-wide text-foreground uppercase">
+              Contact & Support
+            </p>
+            <ul className="mt-4 flex flex-col gap-3 text-sm">
+              <li className="flex items-start gap-2.5">
+                <MapPinIcon className="mt-0.5 h-4 w-4 shrink-0 text-blue-500 dark:text-blue-400" />
+                <span>Mirpur-10, Dhaka 1216, Bangladesh</span>
               </li>
-            ))}
-          </ul>
-        </div>
+              <li className="flex items-center gap-2.5">
+                <PhoneIcon className="h-4 w-4 shrink-0 text-emerald-500 dark:text-emerald-400" />
+                <a href="tel:+8801700000000" className="transition hover:text-foreground">
+                  +880 1700-000000
+                  <span className="ml-1 text-xs text-muted-foreground">(24/7)</span>
+                </a>
+              </li>
+              <li className="flex items-center gap-2.5">
+                <MailIcon className="h-4 w-4 shrink-0 text-cyan-600 dark:text-cyan-400" />
+                <a
+                  href="mailto:support@fixmate.com"
+                  className="transition hover:text-foreground"
+                >
+                  support@fixmate.com
+                </a>
+              </li>
+            </ul>
 
-        {/* Contact Info */}
-        <div>
-          <p className="text-sm font-semibold tracking-wide text-white uppercase">Contact & Support</p>
-          <ul className="mt-4 flex flex-col gap-3 text-sm">
-            <li className="flex items-start gap-2.5">
-              <MapPinIcon className="mt-0.5 h-4 w-4 shrink-0 text-blue-400" />
-              <span>Mirpur-10, Dhaka 1216, Bangladesh</span>
-            </li>
-            <li className="flex items-center gap-2.5">
-              <PhoneIcon className="h-4 w-4 shrink-0 text-emerald-400" />
-              <span>+880 1700-000000 (24/7 Helpline)</span>
-            </li>
-            <li className="flex items-center gap-2.5">
-              <MailIcon className="h-4 w-4 shrink-0 text-cyan-400" />
-              <span>support@fixmate.com</span>
-            </li>
-          </ul>
-
-          <div className="mt-5 rounded-xl border border-slate-800 bg-slate-900/80 p-3 text-xs text-slate-400">
-            <p className="font-semibold text-slate-200">Stripe Test Payments</p>
-            <p className="mt-0.5">Test card: 4242 4242 4242 4242</p>
+            <div className="mt-5 rounded-xl border border-border bg-background/60 p-3 text-xs">
+              <p className="flex items-center gap-1.5 font-semibold text-foreground">
+                <ShieldCheckIcon className="h-3.5 w-3.5 text-emerald-500" />
+                Stripe Test Payments
+              </p>
+              <p className="mt-1 font-mono text-muted-foreground">4242 4242 4242 4242</p>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Bottom Copyright Strip */}
-      <div className="border-t border-slate-900 bg-slate-950 py-5 text-center text-xs text-slate-500">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-4 sm:flex-row sm:px-6">
+      <div className="border-t border-border bg-muted/30 py-5 text-xs">
+        <div
+          className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-4 text-muted-foreground sm:flex-row sm:px-6"
+          data-aos="fade-up"
+          data-aos-delay="260"
+        >
           <p>© {new Date().getFullYear()} FixMate Technologies Ltd. All rights reserved.</p>
-          <div className="flex gap-4 text-xs text-slate-400">
-            <span>Privacy Policy</span>
-            <span>·</span>
-            <span>Terms of Service</span>
-            <span>·</span>
-            <span>Warranty Policy</span>
+          <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
+            <span className="transition hover:text-foreground">Privacy Policy</span>
+            <span aria-hidden="true">·</span>
+            <span className="transition hover:text-foreground">Terms of Service</span>
+            <span aria-hidden="true">·</span>
+            <span className="transition hover:text-foreground">Warranty Policy</span>
           </div>
         </div>
       </div>

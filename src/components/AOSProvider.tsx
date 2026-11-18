@@ -15,9 +15,9 @@ export function AOSProvider() {
 
   useEffect(() => {
     AOS.init({
-      duration: 650,
-      easing: 'ease-out-cubic',
-      offset: 60,
+      duration: 700,
+      easing: 'ease-out-quart',
+      offset: 70,
       once: true,
       mirror: false,
       disable: () => window.matchMedia('(prefers-reduced-motion: reduce)').matches,

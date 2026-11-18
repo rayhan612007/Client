@@ -206,6 +206,24 @@
   }
 }
 
+/* Soft reveal distances — AOS defaults travel 100px, which feels aggressive.
+   These gentler offsets keep scroll reveals subtle across the whole app. */
+html [data-aos='fade-up']:not(.aos-animate) {
+  transform: translate3d(0, 28px, 0) !important;
+}
+html [data-aos='fade-down']:not(.aos-animate) {
+  transform: translate3d(0, -24px, 0) !important;
+}
+html [data-aos='fade-left']:not(.aos-animate) {
+  transform: translate3d(28px, 0, 0) !important;
+}
+html [data-aos='fade-right']:not(.aos-animate) {
+  transform: translate3d(-28px, 0, 0) !important;
+}
+html [data-aos='zoom-in']:not(.aos-animate) {
+  transform: scale(0.95) !important;
+}
+
 /* ---------------------------------------------------------------------------
    Dark-mode compatibility layer for pages that still use literal Tailwind
    neutrals (bg-white, text-slate-900, border-gray-200, ...). Newer components
