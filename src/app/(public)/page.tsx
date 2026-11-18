@@ -222,37 +222,6 @@ const TRUST_POINTS = [
   },
 ];
 
-/* Customer Testimonials */
-const TESTIMONIALS = [
-  {
-    quote: 'My MacBook screen broke right before my final project presentation. The technician came to my Dhanmondi apartment within 2 hours and replaced the display. Paying after testing it gave me huge peace of mind!',
-    author: 'Tanvir Ahmed',
-    role: 'Software Engineer',
-    location: 'Dhanmondi, Dhaka',
-    device: 'MacBook Pro M2 Display',
-    rating: 5,
-    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
-  },
-  {
-    quote: 'Our split AC stopped cooling in peak summer. The technician detected the refrigerant leak, recharged gas, and cleaned the outdoor unit thoroughly. Super clean service and very polite technician.',
-    author: 'Nusrat Jahan',
-    role: 'Homeowner',
-    location: 'Gulshan-2, Dhaka',
-    device: 'General 1.5 Ton Inverter AC',
-    rating: 5,
-    avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&auto=format&fit=crop&q=80',
-  },
-  {
-    quote: 'FixMate is leagues ahead of random street repair shops. Status tracking let me see exactly when the job started and finished. Zero upfront cost until everything was verified working.',
-    author: 'Rafiqul Islam',
-    role: 'Business Owner',
-    location: 'Uttara, Dhaka',
-    device: 'Samsung 55” 4K Smart TV',
-    rating: 5,
-    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
-  },
-];
-
 /* Frequently Asked Questions */
 const FAQS = [
   {
@@ -277,106 +246,6 @@ const FAQS = [
   },
 ];
 
-/* Curated Fallback Services if DB is fresh / empty */
-const FALLBACK_SERVICES: Service[] = [
-  {
-    _id: 'sample-1',
-    title: 'iPhone OLED Display & Screen Replacement',
-    category: 'Smartphone',
-    description: 'High-grade original display replacement for iPhone 11 through 15 series. TrueTone restored.',
-    image: 'https://images.unsplash.com/photo-1580910051074-3eb694886505?w=800&auto=format&fit=crop&q=80',
-    basePrice: 45,
-    estimatedDuration: '45 mins',
-    serviceMode: 'Home Visit',
-    serviceArea: 'Mirpur, Dhaka',
-    technicianName: 'Sabbir Hossain',
-    technicianEmail: 'sabbir.tech@fixmate.com',
-    approvalStatus: 'approved',
-    isAvailable: true,
-    createdAt: new Date().toISOString(),
-  },
-  {
-    _id: 'sample-2',
-    title: 'MacBook & Laptop Motherboard Chip-Level Repair',
-    category: 'Laptop & PC',
-    description: 'Precision micro-soldering, short-circuit diagnostics, liquid damage cleanup and thermal repaste.',
-    image: 'https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=800&auto=format&fit=crop&q=80',
-    basePrice: 55,
-    estimatedDuration: '1 day',
-    serviceMode: 'Shop Drop-off',
-    serviceArea: 'Dhanmondi, Dhaka',
-    technicianName: 'Kabir Ahmed',
-    technicianEmail: 'kabir.tech@fixmate.com',
-    approvalStatus: 'approved',
-    isAvailable: true,
-    createdAt: new Date().toISOString(),
-  },
-  {
-    _id: 'sample-3',
-    title: 'Split AC Master Clean & R32/R410 Gas Refill',
-    category: 'AC',
-    description: 'Deep pressure-jet cleaning for indoor & outdoor units, refrigerant leak detection and gas top-up.',
-    image: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=800&auto=format&fit=crop&q=80',
-    basePrice: 35,
-    estimatedDuration: '2 hours',
-    serviceMode: 'Home Visit',
-    serviceArea: 'Gulshan, Dhaka',
-    technicianName: 'Farhan Tariq',
-    technicianEmail: 'farhan.tech@fixmate.com',
-    approvalStatus: 'approved',
-    isAvailable: true,
-    createdAt: new Date().toISOString(),
-  },
-  {
-    _id: 'sample-4',
-    title: 'Inverter Refrigerator Cooling & Gas Charging',
-    category: 'Refrigerator',
-    description: 'Defrost heating element, fan motor replacement, compressor diagnostics and leak sealing.',
-    image: 'https://images.unsplash.com/photo-1584992236310-6edddc08acff?w=800&auto=format&fit=crop&q=80',
-    basePrice: 40,
-    estimatedDuration: '3 hours',
-    serviceMode: 'Home Visit',
-    serviceArea: 'Uttara, Dhaka',
-    technicianName: 'Nazmul Hasan',
-    technicianEmail: 'nazmul.tech@fixmate.com',
-    approvalStatus: 'approved',
-    isAvailable: true,
-    createdAt: new Date().toISOString(),
-  },
-  {
-    _id: 'sample-5',
-    title: '4K OLED & Smart TV Backlight & Panel Repair',
-    category: 'TV',
-    description: 'Fix dark screens, flickering LED backlights, HDMI logic boards and internal sound circuits.',
-    image: 'https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=800&auto=format&fit=crop&q=80',
-    basePrice: 50,
-    estimatedDuration: '1 day',
-    serviceMode: 'Home Visit',
-    serviceArea: 'Banani, Dhaka',
-    technicianName: 'Zahid Karim',
-    technicianEmail: 'zahid.tech@fixmate.com',
-    approvalStatus: 'approved',
-    isAvailable: true,
-    createdAt: new Date().toISOString(),
-  },
-  {
-    _id: 'sample-6',
-    title: 'Front & Top Load Washing Machine Drum Fix',
-    category: 'Washing Machine',
-    description: 'Drum bearing replacement, drain pump unclogging, drive belt renewal, and error code troubleshooting.',
-    image: 'https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=800&auto=format&fit=crop&q=80',
-    basePrice: 40,
-    estimatedDuration: '2 hours',
-    serviceMode: 'Home Visit',
-    serviceArea: 'Mohammadpur, Dhaka',
-    technicianName: 'Al-Amin Mia',
-    technicianEmail: 'alamin.tech@fixmate.com',
-    approvalStatus: 'approved',
-    isAvailable: true,
-    createdAt: new Date().toISOString(),
-  },
-];
-
 export default function HomePage() {
   const router = useRouter();
   const [featured, setFeatured] = useState<Service[]>([]);
@@ -395,14 +264,8 @@ export default function HomePage() {
 
   useEffect(() => {
     api<{ data: Service[] }>('/api/services')
-      .then((res) => {
-        if (res.data && res.data.length > 0) {
-          setFeatured(res.data.slice(0, 6));
-        } else {
-          setFeatured(FALLBACK_SERVICES);
-        }
-      })
-      .catch(() => setFeatured(FALLBACK_SERVICES))
+      .then((res) => setFeatured((res.data ?? []).slice(0, 6)))
+      .catch(() => setFeatured([]))
       .finally(() => setLoading(false));
   }, []);
 
@@ -418,240 +281,154 @@ export default function HomePage() {
   return (
     <div className="bg-slate-50/50 text-slate-900">
       {/* =========================================================================
-          SECTION 1: HERO SECTION WITH INTERACTIVE SEARCH & LIVE TICKET PREVIEW
+          SECTION 1: HERO SECTION WITH INTERACTIVE SEARCH & TRUST PANEL
          ========================================================================= */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-blue-900 via-indigo-950 to-slate-950 text-white pt-12 pb-20 md:py-24">
-        {/* Ambient Gradient Glows */}
-        <div className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 h-[550px] w-[950px] rounded-full bg-blue-600/20 blur-[130px]" />
-        <div className="pointer-events-none absolute top-1/3 -right-20 h-72 w-72 rounded-full bg-indigo-500/15 blur-[100px]" />
-        <div className="pointer-events-none absolute bottom-10 -left-20 h-80 w-80 rounded-full bg-cyan-500/10 blur-[110px]" />
+      <section className="relative overflow-hidden bg-[#070c1a] text-white">
+        {/* Backdrop: grid, glows, top highlight */}
+        <div
+          className="pointer-events-none absolute inset-0 opacity-70"
+          style={{
+            backgroundImage:
+              'linear-gradient(to right, rgba(148,163,184,0.10) 1px, transparent 1px), linear-gradient(to bottom, rgba(148,163,184,0.10) 1px, transparent 1px)',
+            backgroundSize: '64px 64px',
+            maskImage: 'radial-gradient(ellipse 75% 65% at 50% 25%, black 20%, transparent 78%)',
+            WebkitMaskImage:
+              'radial-gradient(ellipse 75% 65% at 50% 25%, black 20%, transparent 78%)',
+          }}
+        />
+        <div className="pointer-events-none absolute -top-48 left-1/2 h-[560px] w-[1000px] -translate-x-1/2 rounded-full bg-blue-600/20 blur-[140px]" />
+        <div className="pointer-events-none absolute top-1/4 -right-24 h-80 w-80 rounded-full bg-indigo-500/15 blur-[110px]" />
+        <div className="pointer-events-none absolute -bottom-24 -left-24 h-80 w-80 rounded-full bg-cyan-500/10 blur-[110px]" />
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-blue-400/40 to-transparent" />
 
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
-          <div className="grid items-center gap-12 lg:grid-cols-12">
-            {/* Left Content Column */}
-            <div className="lg:col-span-7 text-left">
-              {/* Trust Eyebrow Pill */}
-              <div className="inline-flex items-center gap-2 rounded-full border border-blue-400/30 bg-blue-500/10 px-3.5 py-1 text-xs font-semibold text-blue-300 backdrop-blur-md shadow-xs">
-                <SparklesIcon className="h-4 w-4 text-cyan-300" />
-                <span>On-Demand Device & Appliance Repair Platform</span>
+        <div className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-24 lg:py-28">
+          <div>
+            {/* Hero content */}
+            <div className="mx-auto max-w-3xl text-center">
+              <div className="inline-flex items-center gap-2.5 rounded-full border border-white/10 bg-white/[0.06] px-3.5 py-1.5 text-xs font-medium text-slate-300 backdrop-blur">
+                <span className="relative flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+                </span>
+                Verified technicians across 7 repair categories
               </div>
 
-              {/* Headline */}
-              <h1 className="mt-5 text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl leading-[1.12]">
-                Broken Device? <br />
-                Get It Fixed by{' '}
-                <span className="bg-gradient-to-r from-blue-400 via-sky-300 to-indigo-300 bg-clip-text text-transparent">
-                  Verified Experts.
+              <h1 className="mt-6 text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-[3.5rem] lg:leading-[1.08]">
+                Broken device?
+                <span className="mt-2 block bg-gradient-to-r from-blue-300 via-cyan-200 to-indigo-300 bg-clip-text text-transparent">
+                  Fixed by verified experts.
                 </span>
               </h1>
 
-              {/* Subtitle */}
-              <p className="mt-5 max-w-2xl text-base sm:text-lg text-slate-300 leading-relaxed">
-                Smartphones, laptops, ACs, refrigerators, TVs, and washing machines. Book verified local technicians, track every repair milestone in real time, and <strong className="text-white font-semibold">pay only after the job is completed</strong>.
+              <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-slate-400 sm:text-lg">
+                Book trusted local technicians for phones, laptops, ACs, fridges, TVs and
+                washing machines. Track every milestone and{' '}
+                <strong className="font-semibold text-slate-200">
+                  pay only after the repair is complete
+                </strong>
+                .
               </p>
 
-              {/* Interactive Search Bar */}
+              {/* Search card */}
               <form
                 onSubmit={handleSearchSubmit}
-                className="mt-8 rounded-2xl border border-white/15 bg-white/10 p-2.5 backdrop-blur-xl shadow-2xl shadow-black/40"
+                className="mt-8 rounded-2xl bg-white p-2.5 shadow-2xl shadow-blue-950/40 ring-1 ring-white/20"
               >
-                <div className="grid gap-2 sm:grid-cols-12 items-center">
-                  {/* Search Query Input */}
+                <div className="grid gap-2 sm:grid-cols-12">
                   <div className="relative sm:col-span-4">
-                    <SearchIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                    <SearchIcon className="pointer-events-none absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2 text-slate-400" />
                     <input
                       type="text"
-                      placeholder="e.g. iPhone screen, AC gas refill..."
+                      placeholder="Search e.g. iPhone screen"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full rounded-xl bg-slate-900/80 py-2.5 pl-10 pr-3 text-sm text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-400 border border-white/10"
+                      aria-label="Search services"
+                      className="h-11 w-full rounded-xl border border-transparent bg-slate-100 pr-3 pl-10 text-sm text-slate-900 placeholder:text-slate-500 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20"
                     />
                   </div>
 
-                  {/* Category Dropdown */}
                   <div className="sm:col-span-3">
                     <select
                       value={selectedCategory}
                       onChange={(e) => setSelectedCategory(e.target.value)}
-                      className="w-full rounded-xl bg-slate-900/80 py-2.5 px-3 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-400 border border-white/10"
+                      aria-label="Filter by category"
+                      className="h-11 w-full rounded-xl border border-transparent bg-slate-100 px-3 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20"
                     >
-                      <option value="">All 7 Categories</option>
+                      <option value="">All categories</option>
                       {CATEGORIES.map((c) => (
-                        <option key={c} value={c} className="bg-slate-900 text-white">
+                        <option key={c} value={c}>
                           {c}
                         </option>
                       ))}
                     </select>
                   </div>
 
-                  {/* Mode Dropdown */}
                   <div className="sm:col-span-3">
                     <select
                       value={selectedMode}
                       onChange={(e) => setSelectedMode(e.target.value)}
-                      className="w-full rounded-xl bg-slate-900/80 py-2.5 px-3 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-400 border border-white/10"
+                      aria-label="Filter by service mode"
+                      className="h-11 w-full rounded-xl border border-transparent bg-slate-100 px-3 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20"
                     >
-                      <option value="">Any Service Mode</option>
-                      <option value="Home Visit" className="bg-slate-900 text-white">Home Visit</option>
-                      <option value="Shop Drop-off" className="bg-slate-900 text-white">Shop Drop-off</option>
+                      <option value="">Any mode</option>
+                      <option value="Home Visit">Home Visit</option>
+                      <option value="Shop Drop-off">Shop Drop-off</option>
                     </select>
                   </div>
 
-                  {/* Submit CTA */}
                   <div className="sm:col-span-2">
                     <button
                       type="submit"
-                      className="flex w-full items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 px-3 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 hover:from-blue-600 hover:to-indigo-700 transition"
+                      className="flex h-11 w-full items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-3 text-sm font-semibold text-white shadow-lg shadow-blue-600/25 transition hover:from-blue-500 hover:to-indigo-500 focus:outline-none focus:ring-2 focus:ring-blue-400/60 focus:ring-offset-2 focus:ring-offset-white"
                     >
-                      <span>Find Techs</span>
+                      <span>Search</span>
                       <ArrowRightIcon className="h-4 w-4" />
                     </button>
                   </div>
                 </div>
-
-                {/* Quick Trending Tags */}
-                <div className="mt-3 flex flex-wrap items-center gap-1.5 px-1 text-xs text-slate-400">
-                  <span className="font-medium text-slate-300">Popular:</span>
-                  {[
-                    { label: 'iPhone Screen', cat: 'Smartphone' },
-                    { label: 'MacBook Motherboard', cat: 'Laptop & PC' },
-                    { label: 'AC Master Clean', cat: 'AC' },
-                    { label: 'Fridge Gas', cat: 'Refrigerator' },
-                    { label: 'TV Backlight', cat: 'TV' },
-                  ].map((t) => (
-                    <button
-                      key={t.label}
-                      type="button"
-                      onClick={() => {
-                        setSearchQuery(t.label);
-                        setSelectedCategory(t.cat);
-                        router.push(`/services?category=${encodeURIComponent(t.cat)}&search=${encodeURIComponent(t.label)}`);
-                      }}
-                      className="rounded-lg bg-white/5 px-2 py-0.5 text-slate-300 hover:bg-white/15 hover:text-white transition"
-                    >
-                      {t.label}
-                    </button>
-                  ))}
-                </div>
               </form>
 
-              {/* Value Badges */}
-              <div className="mt-8 grid grid-cols-2 gap-4 pt-4 border-t border-white/10 sm:grid-cols-4">
-                <div className="flex items-center gap-2">
-                  <ShieldCheckIcon className="h-5 w-5 text-emerald-400 shrink-0" />
-                  <span className="text-xs text-slate-300">100% ID Verified</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <DollarSignIcon className="h-5 w-5 text-amber-400 shrink-0" />
-                  <span className="text-xs text-slate-300">Zero Upfront Fee</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <ClockIcon className="h-5 w-5 text-sky-400 shrink-0" />
-                  <span className="text-xs text-slate-300">Avg 45m Response</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <AwardIcon className="h-5 w-5 text-purple-400 shrink-0" />
-                  <span className="text-xs text-slate-300">30-Day Warranty</span>
-                </div>
+              {/* Trending searches */}
+              <div className="mt-4 flex flex-wrap items-center justify-center gap-2 text-xs">
+                <span className="text-slate-500">Trending:</span>
+                {[
+                  { label: 'iPhone Screen', cat: 'Smartphone' },
+                  { label: 'MacBook Motherboard', cat: 'Laptop & PC' },
+                  { label: 'AC Master Clean', cat: 'AC' },
+                  { label: 'Fridge Gas', cat: 'Refrigerator' },
+                  { label: 'TV Backlight', cat: 'TV' },
+                ].map((tag) => (
+                  <button
+                    key={tag.label}
+                    type="button"
+                    onClick={() => {
+                      setSearchQuery(tag.label);
+                      setSelectedCategory(tag.cat);
+                      router.push(
+                        `/services?category=${encodeURIComponent(tag.cat)}&search=${encodeURIComponent(tag.label)}`,
+                      );
+                    }}
+                    className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-slate-300 transition hover:border-blue-400/40 hover:bg-white/10 hover:text-white"
+                  >
+                    {tag.label}
+                  </button>
+                ))}
               </div>
-            </div>
 
-            {/* Right Interactive Ticket & Live Simulation Card */}
-            <div className="lg:col-span-5">
-              <div className="relative mx-auto max-w-md rounded-3xl border border-white/15 bg-slate-900/80 p-6 backdrop-blur-2xl shadow-2xl shadow-blue-900/40">
-                {/* Header Badge */}
-                <div className="flex items-center justify-between border-b border-white/10 pb-4">
-                  <div className="flex items-center gap-2">
-                    <div className="h-2.5 w-2.5 rounded-full bg-emerald-400 animate-pulse" />
-                    <span className="text-xs font-semibold tracking-wider uppercase text-slate-300">
-                      Live Job Tracker
-                    </span>
-                  </div>
-                  <span className="rounded-full bg-amber-500/20 px-2.5 py-0.5 text-[11px] font-semibold text-amber-300 border border-amber-500/30">
-                    Status: In-Progress
-                  </span>
-                </div>
-
-                {/* Service Details Inside Card */}
-                <div className="mt-4 flex gap-3.5">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src="https://images.unsplash.com/photo-1580910051074-3eb694886505?w=200&auto=format&fit=crop&q=80"
-                    alt="iPhone Screen Repair"
-                    className="h-16 w-16 rounded-2xl object-cover border border-white/10 shrink-0"
-                  />
-                  <div>
-                    <span className="text-[10px] font-semibold uppercase tracking-wider text-blue-400">
-                      Smartphone Repair
-                    </span>
-                    <h2 className="text-sm font-bold text-white">iPhone 14 Pro Max Display Assembly</h2>
-                    <p className="mt-0.5 text-xs text-slate-400">Mode: Home Visit · Dhanmondi</p>
-                  </div>
-                </div>
-
-                {/* Progress Step Pipeline (Linear Visual Flow) */}
-                <div className="mt-5 rounded-2xl bg-slate-950/60 p-4 border border-white/5">
-                  <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-3">
-                    Repair Pipeline:
-                  </p>
-                  <div className="flex items-center justify-between text-xs">
-                    <div className="flex flex-col items-center gap-1">
-                      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-500 text-white font-bold text-[10px]">
-                        ✓
-                      </div>
-                      <span className="text-[10px] text-slate-300">Requested</span>
-                    </div>
-                    <div className="h-0.5 flex-1 bg-blue-500" />
-                    <div className="flex flex-col items-center gap-1">
-                      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-500 text-white font-bold text-[10px]">
-                        ✓
-                      </div>
-                      <span className="text-[10px] text-slate-300">Accepted</span>
-                    </div>
-                    <div className="h-0.5 flex-1 bg-amber-500" />
-                    <div className="flex flex-col items-center gap-1">
-                      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-amber-500 text-white font-bold text-[10px] ring-4 ring-amber-500/20">
-                        ⚡
-                      </div>
-                      <span className="text-[10px] font-semibold text-amber-300">Working</span>
-                    </div>
-                    <div className="h-0.5 flex-1 bg-slate-700" />
-                    <div className="flex flex-col items-center gap-1">
-                      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-800 text-slate-400 text-[10px]">
-                        4
-                      </div>
-                      <span className="text-[10px] text-slate-500">Pay</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Assigned Technician Bio Snippet */}
-                <div className="mt-4 flex items-center justify-between rounded-xl bg-white/5 p-3">
-                  <div className="flex items-center gap-2.5">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80"
-                      alt="Technician"
-                      className="h-9 w-9 rounded-full object-cover border border-white/20"
-                    />
-                    <div>
-                      <p className="text-xs font-semibold text-white">Sabbir Hossain</p>
-                      <p className="text-[10px] text-emerald-400">Verified Pro · 140+ jobs</p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-[10px] text-slate-400">Total Quote</p>
-                    <p className="text-sm font-bold text-white">$45.00</p>
-                  </div>
-                </div>
-
-                {/* Escrow Guarantee Pill */}
-                <div className="mt-4 flex items-center justify-center gap-2 rounded-xl bg-emerald-500/10 py-2 px-3 border border-emerald-500/20 text-center">
-                  <ShieldCheckIcon className="h-4 w-4 text-emerald-400" />
-                  <span className="text-xs font-medium text-emerald-300">
-                    Payment held in escrow until completion
-                  </span>
-                </div>
+              {/* Trust notes */}
+              <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 border-t border-white/10 pt-6 text-xs text-slate-400">
+                <span className="flex items-center gap-2">
+                  <CheckIcon className="h-4 w-4 text-emerald-400" />
+                  ID-verified technicians
+                </span>
+                <span className="flex items-center gap-2">
+                  <CheckIcon className="h-4 w-4 text-emerald-400" />
+                  No upfront payment
+                </span>
+                <span className="flex items-center gap-2">
+                  <CheckIcon className="h-4 w-4 text-emerald-400" />
+                  30-day warranty
+                </span>
               </div>
             </div>
           </div>
@@ -795,6 +572,13 @@ export default function HomePage() {
               {Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} className="h-96 animate-pulse rounded-3xl bg-slate-100" />
               ))}
+            </div>
+          ) : featured.length === 0 ? (
+            <div className="mt-10 rounded-3xl border border-dashed border-slate-300 bg-white p-12 text-center">
+              <p className="text-sm font-semibold text-slate-900">No services available yet</p>
+              <p className="mt-1 text-xs text-slate-500">
+                Approved services will appear here as technicians join the platform.
+              </p>
             </div>
           ) : (
             <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -1092,99 +876,6 @@ export default function HomePage() {
               </div>
             );
           })}
-        </div>
-      </section>
-
-      {/* =========================================================================
-          SECTION 8: LIVE PLATFORM IMPACT & METRICS COUNTER
-         ========================================================================= */}
-      <section className="bg-gradient-to-r from-blue-700 via-indigo-700 to-blue-800 text-white py-14">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <div className="grid grid-cols-2 gap-8 text-center lg:grid-cols-4">
-            <div>
-              <p className="text-4xl font-extrabold tracking-tight sm:text-5xl text-white">12,500+</p>
-              <p className="mt-2 text-xs font-semibold uppercase tracking-wider text-blue-200">
-                Completed Repairs
-              </p>
-            </div>
-            <div>
-              <p className="text-4xl font-extrabold tracking-tight sm:text-5xl text-white">450+</p>
-              <p className="mt-2 text-xs font-semibold uppercase tracking-wider text-blue-200">
-                Verified Technicians
-              </p>
-            </div>
-            <div>
-              <p className="text-4xl font-extrabold tracking-tight sm:text-5xl text-white">99.4%</p>
-              <p className="mt-2 text-xs font-semibold uppercase tracking-wider text-blue-200">
-                Satisfied Customers
-              </p>
-            </div>
-            <div>
-              <p className="text-4xl font-extrabold tracking-tight sm:text-5xl text-white">&lt; 45 min</p>
-              <p className="mt-2 text-xs font-semibold uppercase tracking-wider text-blue-200">
-                Average Tech Response
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* =========================================================================
-          SECTION 9: CUSTOMER TESTIMONIALS & REAL STORIES
-         ========================================================================= */}
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-24">
-        <div className="text-center">
-          <div className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700">
-            <StarIcon className="h-3.5 w-3.5 fill-current" />
-            <span>Authentic Experiences</span>
-          </div>
-          <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
-            Loved by 12,000+ Device Owners
-          </h2>
-          <p className="mx-auto mt-3 max-w-2xl text-slate-500">
-            Read how FixMate helped customers restore their valuable smartphones, laptops, and home appliances safely.
-          </p>
-        </div>
-
-        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {TESTIMONIALS.map((t) => (
-            <div
-              key={t.author}
-              className="flex flex-col justify-between rounded-3xl border border-slate-200/80 bg-white p-7 shadow-xs hover:shadow-lg transition"
-            >
-              <div>
-                {/* 5 Stars */}
-                <div className="flex gap-1 text-amber-400">
-                  {Array.from({ length: t.rating }).map((_, i) => (
-                    <StarIcon key={i} className="h-4 w-4 fill-current" />
-                  ))}
-                </div>
-
-                <p className="mt-4 text-xs italic leading-relaxed text-slate-600">
-                  &ldquo;{t.quote}&rdquo;
-                </p>
-
-                <div className="mt-4 rounded-xl bg-slate-50 p-2.5 text-[11px] text-slate-600">
-                  <span className="font-semibold text-slate-800">Repaired:</span> {t.device}
-                </div>
-              </div>
-
-              <div className="mt-6 flex items-center gap-3 border-t border-slate-100 pt-4">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={t.avatar}
-                  alt={t.author}
-                  className="h-10 w-10 rounded-full object-cover ring-2 ring-slate-100"
-                />
-                <div>
-                  <p className="text-xs font-bold text-slate-900">{t.author}</p>
-                  <p className="text-[10px] text-slate-400">
-                    {t.role} · {t.location}
-                  </p>
-                </div>
-              </div>
-            </div>
-          ))}
         </div>
       </section>
 
