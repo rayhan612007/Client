@@ -32,9 +32,9 @@ function SignInForm() {
       router.push(next);
       return;
     }
-    // redirect to the correct role dashboard
-    const res = await fetch('/api/auth/session', { credentials: 'include' });
-    const session = await res.json();
+    // redirect to the correct role dashboard (better-auth: /api/auth/get-session)
+    const res = await fetch('/api/auth/get-session', { credentials: 'include' });
+    const session = await res.json().catch(() => null);
     const role = session?.user?.role ?? 'customer';
     router.push(`/dashboard/${role}`);
     router.refresh();
