@@ -29,10 +29,14 @@ export const auth = betterAuth({
       // Only customer | technician are selectable at sign-up — force anything else to customer.
       if (ctx.path === '/sign-up/email' && ctx.body) {
         const body = ctx.body as Record<string, unknown>;
+        // `context.body` (not `body`) — a bare { body } return is sent back as
+        // the response, so sign-up echoed the request and never created a user.
         return {
-          body: {
-            ...body,
-            role: body.role === 'technician' ? 'technician' : 'customer',
+          context: {
+            body: {
+              ...body,
+              role: body.role === 'technician' ? 'technician' : 'customer',
+            },
           },
         };
       }
