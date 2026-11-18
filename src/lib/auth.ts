@@ -5,8 +5,8 @@ import { APIError, createAuthMiddleware } from 'better-auth/api';
 
 import { MongoClient } from 'mongodb';
 
-const client = new MongoClient(process.env.MONGODB_URI ?? 'mongodb://localhost:27017');
-const db = client.db(process.env.MONGODB_DB ?? 'fixmate');
+const client = new MongoClient(process.env.MONGODB_URI as string);
+const db = client.db(process.env.MONGODB_DB);
 
 export const auth = betterAuth({
   database: mongodbAdapter(db),

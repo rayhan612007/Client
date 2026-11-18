@@ -1,6 +1,6 @@
 import { AuthUser } from '@/lib/auth-shared';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:5000';
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 /** Gets a JWT from BetterAuth (jwt plugin /token endpoint) for API calls. */
 export async function getToken(): Promise<string | null> {
