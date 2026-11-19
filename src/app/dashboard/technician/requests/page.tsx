@@ -35,6 +35,7 @@ export default function TechnicianRequestsPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<Filter>('all');
+  const [problemDetails, setProblemDetails] = useState<Booking | null>(null);
   const [completeId, setCompleteId] = useState<string | null>(null);
   const [finalAmount, setFinalAmount] = useState('');
   const [busy, setBusy] = useState(false);
@@ -67,6 +68,17 @@ export default function TechnicianRequestsPage() {
       active = false;
     };
   }, []);
+
+  useEffect(() => {
+    if (!problemDetails) return;
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') setProblemDetails(null);
+    }
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [problemDetails]);
 
   async function updateStatus(id: string, status: BookingStatus, amount?: number) {
     setBusy(true);
@@ -158,9 +170,16 @@ export default function TechnicianRequestsPage() {
                   </p>
                 </TableCell>
                 <TableCell>
-                  <p className="line-clamp-2 max-w-[220px] text-xs leading-relaxed text-muted-foreground">
-                    {booking.problemDescription}
-                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setProblemDetails(booking)}
+                    aria-label={`View full problem description for ${booking.serviceTitle}`}
+                    className="block max-w-[220px] text-left"
+                  >
+                    <span className="line-clamp-2 text-xs leading-relaxed text-red-600 dark:text-red-400">
+                      {booking.problemDescription}
+                    </span>
+                  </button>
                 </TableCell>
                 <TableCell>
                   <StatusBadge status={booking.status} />
@@ -221,6 +240,45 @@ export default function TechnicianRequestsPage() {
             ))}
           </TableBody>
         </Table>
+      )}
+
+      {problemDetails && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4 backdrop-blur-sm"
+          onClick={() => setProblemDetails(null)}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="problem-details-title"
+            className="w-full max-w-lg overflow-hidden rounded-2xl border border-border bg-card text-card-foreground shadow-2xl animate-in-up"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="flex items-start justify-between gap-3 border-b border-border/60 px-5 py-4">
+              <div>
+                <h2 id="problem-details-title" className="text-base font-semibold tracking-tight">
+                  Problem details
+                </h2>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {problemDetails.serviceTitle} · {problemDetails.customerName}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setProblemDetails(null)}
+                className="flex size-8 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition hover:bg-muted hover:text-foreground"
+                aria-label="Close problem details"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+            <div className="max-h-[60vh] overflow-y-auto px-5 py-5">
+              <p className="whitespace-pre-wrap break-words text-sm leading-relaxed text-foreground/80">
+                {problemDetails.problemDescription}
+              </p>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Complete job modal */}

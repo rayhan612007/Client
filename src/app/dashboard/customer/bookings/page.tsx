@@ -164,7 +164,7 @@ export default function MyBookingsPage() {
                   </span>
                 </TableCell>
                 <TableCell className="font-semibold tabular-nums">
-                  ${booking.paymentStatus === 'paid' ? booking.finalAmount : booking.basePrice}
+                  ${booking.status === 'completed' ? booking.finalAmount : booking.basePrice}
                 </TableCell>
                 <TableCell>
                   <StatusBadge status={booking.status} />
