@@ -26,7 +26,7 @@ export function ServiceCard({
       href={`/services/${service._id}`}
       data-aos="fade-up"
       {...(typeof delay === 'number' ? { 'data-aos-delay': delay } : {})}
-      className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border/70 bg-card shadow-xs transition duration-300 ease-out hover:-translate-y-1.5 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+      className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border/70 bg-card shadow-xs transition-[transform,border-color,box-shadow] duration-1000 ease-out hover:-translate-y-1.5 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
     >
       {/* Uniform banner */}
       <div className="relative h-44 w-full overflow-hidden bg-muted">
@@ -34,7 +34,7 @@ export function ServiceCard({
         <img
           src={service.image}
           alt={service.title}
-          className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.06]"
+          className="h-full w-full object-cover transition-transform duration-1000 ease-out group-hover:scale-[1.05]"
         />
         <div className="absolute inset-x-0 bottom-0 h-20 bg-linear-to-t from-black/55 to-transparent" />
         <span className="absolute top-3 left-3 rounded-full bg-slate-900/85 px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur-md">

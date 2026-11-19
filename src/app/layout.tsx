@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ThemedToaster } from "@/components/ThemedToaster";
 import { ThemeProvider } from "@/components/ThemeProvider";
-import { AOSProvider } from "@/components/AOSProvider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import "./globals.css";
 
@@ -65,7 +64,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         >
           <TooltipProvider>{children}</TooltipProvider>
           <ThemedToaster />
-          <AOSProvider />
         </ThemeProvider>
       </body>
     </html>

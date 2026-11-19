@@ -252,18 +252,18 @@
     color: transparent;
   }
   .animate-in-up {
-    animation: in-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation: in-up 1s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 }
 
 @keyframes in-up {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translate3d(0, 8px, 0) scale(0.992);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translate3d(0, 0, 0) scale(1);
   }
 }
 
@@ -279,20 +279,36 @@
 
 /* Soft reveal distances — AOS defaults travel 100px, which feels aggressive.
    These gentler offsets keep scroll reveals subtle across the whole app. */
+html [data-aos] {
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+  will-change: transform, opacity;
+}
+html [data-aos].aos-animate {
+  will-change: auto;
+}
 html [data-aos='fade-up']:not(.aos-animate) {
-  transform: translate3d(0, 28px, 0) !important;
+  transform: translate3d(0, 16px, 0) !important;
 }
 html [data-aos='fade-down']:not(.aos-animate) {
-  transform: translate3d(0, -24px, 0) !important;
+  transform: translate3d(0, -14px, 0) !important;
 }
 html [data-aos='fade-left']:not(.aos-animate) {
-  transform: translate3d(28px, 0, 0) !important;
+  transform: translate3d(16px, 0, 0) !important;
 }
 html [data-aos='fade-right']:not(.aos-animate) {
-  transform: translate3d(-28px, 0, 0) !important;
+  transform: translate3d(-16px, 0, 0) !important;
 }
 html [data-aos='zoom-in']:not(.aos-animate) {
-  transform: scale(0.95) !important;
+  transform: scale(0.97) !important;
+}
+
+[data-aos-disabled] [data-aos] {
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
+  animation: none !important;
+  will-change: auto !important;
 }
 
 /* ---------------------------------------------------------------------------
@@ -465,13 +481,13 @@ html [data-aos='zoom-in']:not(.aos-animate) {
 --------------------------------------------------------------------------- */
 @layer utilities {
   .animate-float {
-    animation: float 7s ease-in-out infinite;
+    animation: float 14s ease-in-out infinite;
   }
   .animate-float-delayed {
-    animation: float 8.5s ease-in-out 1.2s infinite;
+    animation: float 16s ease-in-out 1.2s infinite;
   }
   .animate-marquee {
-    animation: marquee 42s linear infinite;
+    animation: marquee 72s linear infinite;
   }
   .marquee-paused:hover .animate-marquee {
     animation-play-state: paused;
@@ -481,7 +497,7 @@ html [data-aos='zoom-in']:not(.aos-animate) {
     animation: gradient-pan 9s ease-in-out infinite alternate;
   }
   .animate-in-scale {
-    animation: in-scale 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation: in-scale 1s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
   /* Edge fade for marquees so items enter/exit softly. */
   .edge-fade-x {
@@ -547,6 +563,7 @@ html [data-aos='zoom-in']:not(.aos-animate) {
   .animate-float-delayed,
   .animate-gradient-pan,
   .animate-in-scale,
+  .animate-in-up,
   .skeleton::after {
     animation: none !important;
   }

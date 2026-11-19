@@ -3,6 +3,7 @@ import { Loader2 } from 'lucide-react';
 export default function DashboardLoading() {
   return (
     <div
+      data-aos-disabled=""
       role="status"
       aria-label="Loading"
       className="flex min-h-[50vh] w-full items-center justify-center"

@@ -77,7 +77,7 @@ function isItemActive(pathname: string, href: string, role: Role) {
 
 function DashboardLoading() {
   return (
-    <div className="flex min-h-svh w-full">
+    <div data-aos-disabled="" className="flex min-h-svh w-full">
       <div className="hidden w-64 flex-col gap-4 border-r bg-sidebar p-4 md:flex">
         <div className="flex items-center gap-3">
           <Skeleton className="size-9 rounded-lg" />
@@ -162,7 +162,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       .sort((a, b) => b.href.length - a.href.length)[0]?.label ?? 'Dashboard';
 
   return (
-    <SidebarProvider>
+    <SidebarProvider data-aos-disabled="">
       <Sidebar collapsible="icon" variant="inset">
         <SidebarHeader className="pb-0">
           <SidebarMenu>

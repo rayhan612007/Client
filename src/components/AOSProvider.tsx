@@ -6,21 +6,20 @@ import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 
 /**
- * Initialises AOS once per app and re-scans after client-side navigations.
- * AOS ships its own MutationObserver, so asynchronously rendered cards
- * (bookings, services, payments) get picked up automatically.
+ * Initialises AOS for the public route group and re-scans after navigation.
+ * AOS's MutationObserver also picks up asynchronously rendered public content.
  *
- * Tuning notes: 600ms with an ease-out curve reads as premium rather than
- * slow, and `once` keeps long pages calm while scrolling back up.
+ * Tuning notes: 850ms with a restrained trigger zone keeps reveals smooth
+ * without delaying interaction; `once` avoids repeating motion on long pages.
  */
 export function AOSProvider() {
   const pathname = usePathname();
 
   useEffect(() => {
     AOS.init({
-      duration: 600,
-      easing: 'ease-out-cubic',
-      offset: 80,
+      duration: 850,
+      easing: 'ease-out-quart',
+      offset: 72,
       delay: 0,
       once: true,
       mirror: false,
@@ -31,7 +30,16 @@ export function AOSProvider() {
   }, []);
 
   useEffect(() => {
-    AOS.refreshHard();
+    let secondFrame = 0;
+    const firstFrame = window.requestAnimationFrame(() => {
+      AOS.refreshHard();
+      secondFrame = window.requestAnimationFrame(() => AOS.refresh());
+    });
+
+    return () => {
+      window.cancelAnimationFrame(firstFrame);
+      window.cancelAnimationFrame(secondFrame);
+    };
   }, [pathname]);
 
   return null;
