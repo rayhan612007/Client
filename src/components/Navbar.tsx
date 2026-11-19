@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { authClient } from '@/lib/auth-client';
 import { Role } from '@/lib/auth-shared';
 import { toast } from 'sonner';
@@ -27,6 +27,23 @@ export default function Navbar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const profileMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+
+    function closeOnOutsideClick(event: PointerEvent) {
+      if (
+        event.target instanceof Node &&
+        !profileMenuRef.current?.contains(event.target)
+      ) {
+        setMenuOpen(false);
+      }
+    }
+
+    document.addEventListener('pointerdown', closeOnOutsideClick);
+    return () => document.removeEventListener('pointerdown', closeOnOutsideClick);
+  }, [menuOpen]);
 
   const user = session?.user as
     | { name?: string; email: string; image?: string; role?: Role }
@@ -87,7 +104,7 @@ export default function Navbar() {
             <div className="h-9 w-9 animate-pulse rounded-full bg-muted" />
           ) : user ? (
             <>
-              <div className="relative">
+              <div ref={profileMenuRef} className="relative">
                 <button
                   onClick={() => setMenuOpen((v) => !v)}
                   className="flex items-center gap-2.5 rounded-full border border-border bg-card py-1 pr-3 pl-1 shadow-xs transition hover:border-primary/50 hover:shadow-sm"
