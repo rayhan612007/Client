@@ -20,6 +20,7 @@ export interface Service {
   serviceArea: string;
   technicianName: string;
   technicianEmail: string;
+  technicianImage?: string;
   approvalStatus: ApprovalStatus;
   isAvailable: boolean;
   createdAt: string;

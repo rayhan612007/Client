@@ -77,7 +77,16 @@ export function ServiceCard({
 
         <div className="mt-4 flex items-center gap-2.5 border-t border-border/60 pt-3.5">
           <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary transition-transform duration-300 group-hover:scale-105">
-            {service.technicianName?.charAt(0) || 'T'}
+            {service.technicianImage ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={service.technicianImage}
+                alt={`${service.technicianName} profile`}
+                className="size-full rounded-full object-cover"
+              />
+            ) : (
+              service.technicianName?.charAt(0) || 'T'
+            )}
           </span>
           <span className="truncate text-sm font-medium text-foreground/90">
             {service.technicianName}

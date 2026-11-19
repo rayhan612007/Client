@@ -192,14 +192,6 @@ export default function Footer() {
                 </a>
               </li>
             </ul>
-
-            <div className="mt-5 rounded-xl border border-border bg-background/60 p-3 text-xs">
-              <p className="flex items-center gap-1.5 font-semibold text-foreground">
-                <ShieldCheckIcon className="h-3.5 w-3.5 text-emerald-500" />
-                Stripe Test Payments
-              </p>
-              <p className="mt-1 font-mono text-muted-foreground">4242 4242 4242 4242</p>
-            </div>
           </div>
         </div>
       </div>
