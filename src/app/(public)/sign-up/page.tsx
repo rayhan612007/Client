@@ -130,7 +130,7 @@ export default function SignUpPage() {
                 Join FixMate free
               </span>
 
-              <h2 className="mt-8 text-4xl leading-[1.1] font-semibold tracking-tight">
+              <h2 className="mt-8 text-4xl leading-[1.1] font-bold tracking-tight">
                 Your device, in
                 <span className="mt-1 block bg-gradient-to-r from-blue-300 via-cyan-200 to-indigo-300 bg-clip-text text-transparent">
                   expert hands.
@@ -175,7 +175,7 @@ export default function SignUpPage() {
           </div>
 
           <div className="mt-5 lg:mt-0">
-            <h1 className="text-3xl font-semibold tracking-tight">Create your account</h1>
+            <h1 className="text-3xl font-bold tracking-tight">Create your account</h1>
             <p className="mt-1.5 text-sm text-muted-foreground">
               Join FixMate as a customer or a technician.
             </p>

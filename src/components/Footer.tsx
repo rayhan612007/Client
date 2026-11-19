@@ -68,7 +68,7 @@ export default function Footer() {
     <footer className="border-t border-border bg-card text-muted-foreground">
       {/* Trust & Guarantee Strip */}
       <div className="border-b border-border bg-muted/40">
-        <div className="mx-auto grid max-w-7xl gap-6 px-4 py-8 sm:grid-cols-2 lg:grid-cols-4 sm:px-6">
+        <div className="container-page grid gap-6 py-8 sm:grid-cols-2 lg:grid-cols-4">
           {TRUST.map((item, index) => {
             const Icon = item.icon;
             return (
@@ -94,7 +94,7 @@ export default function Footer() {
       </div>
 
       {/* Main Footer Links */}
-      <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6">
+      <div className="container-page py-14">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-12">
           {/* Brand Info */}
           <div className="lg:col-span-4" data-aos="fade-up">
@@ -207,7 +207,7 @@ export default function Footer() {
       {/* Bottom Copyright Strip */}
       <div className="border-t border-border bg-muted/30 py-5 text-xs">
         <div
-          className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-4 text-muted-foreground sm:flex-row sm:px-6"
+          className="container-page flex flex-col items-center justify-between gap-3 text-muted-foreground sm:flex-row"
           data-aos="fade-up"
           data-aos-delay="260"
         >

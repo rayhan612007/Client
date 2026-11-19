@@ -1,18 +1,12 @@
 'use client';
 
-import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import { Service, CATEGORIES } from '@/lib/auth-shared';
-import {
-  SearchIcon,
-  MapPinIcon,
-  ClockIcon,
-  StarIcon,
-  ArrowRightIcon,
-  WrenchIcon,
-} from '@/components/Icons';
+import { SectionHeading } from '@/components/SectionHeading';
+import { ServiceCard } from '@/components/ServiceCard';
+import { SearchIcon, WrenchIcon, ArrowRightIcon, CheckIcon } from '@/components/Icons';
 
 function ServicesList() {
   const router = useRouter();
@@ -68,53 +62,53 @@ function ServicesList() {
     router.push('/services');
   }
 
-  return (
-    <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
-      {/* Page Title & Breadcrumbs */}
-      <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
-        <div>
-          <div className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
-            <WrenchIcon className="h-3.5 w-3.5" />
-            <span>Verified Repair Marketplace</span>
-          </div>
-          <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
-            Browse All Services
-          </h1>
-          <p className="mt-2 text-sm text-slate-500 max-w-2xl">
-            Discover verified repair specialists across Dhaka. All searching, filtering and sorting are handled live on the server with zero upfront deposit.
-          </p>
-        </div>
+  const hasFilters = Boolean(search || category || serviceMode || (sort && sort !== 'newest'));
 
-        {/* Counter Badge */}
+  return (
+    <div className="container-page py-12 sm:py-16">
+      {/* Page title + live counter */}
+      <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+        <SectionHeading
+          as="h1"
+          align="left"
+          eyebrow="Verified Repair Marketplace"
+          icon={WrenchIcon}
+          title="Browse All Services"
+          description="Discover verified repair specialists across Dhaka. Every search, filter and sort runs live on the server — with zero upfront deposit."
+          className="flex-1"
+        />
         {!loading && (
-          <div className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700 shadow-xs self-start md:self-auto">
-            <span className="flex h-2 w-2 rounded-full bg-emerald-500" />
-            <span>{services.length} {services.length === 1 ? 'service' : 'services'} available</span>
+          <div className="inline-flex w-fit items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-xs font-semibold text-foreground shadow-xs">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-60" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+            </span>
+            {services.length} {services.length === 1 ? 'service' : 'services'} available
           </div>
         )}
       </div>
 
-      {/* Server-Side Search, Filter & Sort Toolbar (Challenge 1) */}
-      <div className="mt-8 rounded-3xl border border-slate-200 bg-white p-4 sm:p-5 shadow-xs">
-        <form onSubmit={onSearch} className="grid gap-3 sm:grid-cols-2 lg:grid-cols-12 items-center">
-          {/* Keyword Search Input */}
+      {/* Server-side search, filter & sort toolbar */}
+      <div className="panel mt-8 p-4 sm:p-5" data-aos="fade-up">
+        <form onSubmit={onSearch} className="grid items-center gap-3 sm:grid-cols-2 lg:grid-cols-12">
           <div className="relative sm:col-span-2 lg:col-span-4">
-            <SearchIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <SearchIcon className="pointer-events-none absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search by title or category..."
-              className="w-full rounded-xl border border-input bg-muted/40 py-2.5 pl-10 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-ring focus:bg-card focus:outline-none focus:ring-2 focus:ring-ring/20 transition"
+              aria-label="Search services"
+              className="w-full rounded-xl border border-input bg-muted/40 py-2.5 pr-3 pl-10 text-sm text-foreground transition placeholder:text-muted-foreground focus:border-ring focus:bg-card focus:ring-2 focus:ring-ring/20 focus:outline-none"
             />
           </div>
 
-          {/* Category Filter */}
           <div className="lg:col-span-3">
             <select
               value={category}
               onChange={(e) => setParam('category', e.target.value)}
-              className="w-full rounded-xl border border-input bg-muted/40 py-2.5 px-3 text-sm text-foreground focus:border-ring focus:bg-card focus:outline-none focus:ring-2 focus:ring-ring/20 transition"
+              aria-label="Filter by category"
+              className="w-full rounded-xl border border-input bg-muted/40 px-3 py-2.5 text-sm text-foreground transition focus:border-ring focus:bg-card focus:ring-2 focus:ring-ring/20 focus:outline-none"
             >
               <option value="">All Categories</option>
               {CATEGORIES.map((c) => (
@@ -125,12 +119,12 @@ function ServicesList() {
             </select>
           </div>
 
-          {/* Service Mode Filter */}
           <div className="lg:col-span-3">
             <select
               value={serviceMode}
               onChange={(e) => setParam('serviceMode', e.target.value)}
-              className="w-full rounded-xl border border-input bg-muted/40 py-2.5 px-3 text-sm text-foreground focus:border-ring focus:bg-card focus:outline-none focus:ring-2 focus:ring-ring/20 transition"
+              aria-label="Filter by service mode"
+              className="w-full rounded-xl border border-input bg-muted/40 px-3 py-2.5 text-sm text-foreground transition focus:border-ring focus:bg-card focus:ring-2 focus:ring-ring/20 focus:outline-none"
             >
               <option value="">Any Service Mode</option>
               <option value="Home Visit">Home Visit</option>
@@ -138,12 +132,14 @@ function ServicesList() {
             </select>
           </div>
 
-          {/* Sort By Price / Newest */}
           <div className="lg:col-span-2">
             <select
               value={sort}
-              onChange={(e) => setParam('sort', e.target.value === 'newest' ? '' : e.target.value)}
-              className="w-full rounded-xl border border-input bg-muted/40 py-2.5 px-3 text-sm text-foreground focus:border-ring focus:bg-card focus:outline-none focus:ring-2 focus:ring-ring/20 transition"
+              onChange={(e) =>
+                setParam('sort', e.target.value === 'newest' ? '' : e.target.value)
+              }
+              aria-label="Sort services"
+              className="w-full rounded-xl border border-input bg-muted/40 px-3 py-2.5 text-sm text-foreground transition focus:border-ring focus:bg-card focus:ring-2 focus:ring-ring/20 focus:outline-none"
             >
               <option value="">Newest</option>
               <option value="price-asc">Price: Low to High</option>
@@ -152,52 +148,67 @@ function ServicesList() {
           </div>
         </form>
 
-        {/* Active Filter Tags */}
-        {(category || serviceMode || search || (sort && sort !== 'newest')) && (
-          <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-slate-100 pt-3 text-xs">
-            <span className="font-semibold text-slate-500">Active filters:</span>
+        {hasFilters && (
+          <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-border/60 pt-3 text-xs">
+            <span className="font-semibold text-muted-foreground">Active filters:</span>
             {search && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2.5 py-0.5 text-blue-700">
+              <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 font-medium text-primary">
                 Search: &ldquo;{search}&rdquo;
                 <button
                   type="button"
+                  aria-label="Clear search filter"
                   onClick={() => {
                     setSearch('');
                     setParam('search', '');
                   }}
-                  className="hover:text-blue-900"
+                  className="transition hover:text-primary/70"
                 >
                   ×
                 </button>
               </span>
             )}
             {category && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2.5 py-0.5 text-blue-700">
+              <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 font-medium text-primary">
                 Category: {category}
-                <button type="button" onClick={() => setParam('category', '')} className="hover:text-blue-900">
+                <button
+                  type="button"
+                  aria-label="Clear category filter"
+                  onClick={() => setParam('category', '')}
+                  className="transition hover:text-primary/70"
+                >
                   ×
                 </button>
               </span>
             )}
             {serviceMode && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-indigo-50 px-2.5 py-0.5 text-indigo-700">
+              <span className="inline-flex items-center gap-1 rounded-full bg-indigo-500/10 px-2.5 py-1 font-medium text-indigo-600 dark:text-indigo-400">
                 Mode: {serviceMode}
-                <button type="button" onClick={() => setParam('serviceMode', '')} className="hover:text-indigo-900">
+                <button
+                  type="button"
+                  aria-label="Clear service mode filter"
+                  onClick={() => setParam('serviceMode', '')}
+                  className="transition hover:opacity-70"
+                >
                   ×
                 </button>
               </span>
             )}
             {sort && sort !== 'newest' && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-0.5 text-slate-700">
+              <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-1 font-medium text-foreground/80">
                 Sort: {sort === 'price-asc' ? 'Price Low-High' : 'Price High-Low'}
-                <button type="button" onClick={() => setParam('sort', '')} className="hover:text-slate-900">
+                <button
+                  type="button"
+                  aria-label="Clear sort"
+                  onClick={() => setParam('sort', '')}
+                  className="transition hover:opacity-70"
+                >
                   ×
                 </button>
               </span>
             )}
             <button
               onClick={clearAllFilters}
-              className="text-xs font-semibold text-rose-600 hover:underline ml-1"
+              className="ml-1 font-semibold text-rose-600 transition hover:underline dark:text-rose-400"
             >
               Reset all
             </button>
@@ -205,115 +216,44 @@ function ServicesList() {
         )}
       </div>
 
-      {/* Services Grid or Loading / Empty State */}
+      {/* Services grid / loading / empty */}
       {loading ? (
         <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="h-96 animate-pulse rounded-3xl bg-slate-100" />
+            <div key={i} className="skeleton h-[24rem]" />
           ))}
         </div>
       ) : services.length === 0 ? (
-        <div className="mt-12 rounded-3xl border border-dashed border-slate-200 bg-white p-12 text-center shadow-xs">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
+        <div
+          data-aos="fade-up"
+          className="mt-12 rounded-3xl border border-dashed border-border bg-card p-12 text-center shadow-xs"
+        >
+          <div className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-muted text-muted-foreground">
             <SearchIcon className="h-8 w-8" />
           </div>
-          <h2 className="mt-4 text-lg font-bold text-slate-800">No Services Found</h2>
-          <p className="mt-1 text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
-            We couldn&apos;t find any approved services matching your active filters. Try broadening your search or resetting category filters.
+          <h2 className="mt-4 text-lg font-bold text-foreground">No Services Found</h2>
+          <p className="mx-auto mt-1.5 max-w-sm text-sm leading-relaxed text-muted-foreground">
+            We couldn&apos;t find any approved services matching your active filters. Try
+            broadening your search or resetting category filters.
           </p>
-          <button
-            onClick={clearAllFilters}
-            className="mt-5 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-xs font-semibold text-white shadow-sm hover:bg-blue-700 transition"
-          >
-            <span>Reset All Filters</span>
+          <button onClick={clearAllFilters} className="btn-primary mt-6">
+            Reset All Filters
+            <ArrowRightIcon className="h-4 w-4" />
           </button>
         </div>
       ) : (
         <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {services.map((s) => (
-            <Link
-              key={s._id}
-              href={`/services/${s._id}`}
-              className="group flex flex-col h-full overflow-hidden rounded-3xl border border-slate-200/90 bg-white shadow-xs hover:border-blue-400 hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300"
-            >
-              {/* Image banner */}
-              <div className="relative h-44 w-full overflow-hidden bg-slate-100">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={s.image}
-                  alt={s.title}
-                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-                <div className="absolute top-3 left-3">
-                  <span className="rounded-full bg-slate-900/80 px-2.5 py-1 text-[10px] font-semibold text-white backdrop-blur-md">
-                    {s.category}
-                  </span>
-                </div>
-                <div className="absolute top-3 right-3">
-                  <span
-                    className={`rounded-full px-2.5 py-1 text-[10px] font-semibold backdrop-blur-md ${
-                      s.serviceMode === 'Home Visit'
-                        ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-500/30'
-                        : 'bg-indigo-950/80 text-indigo-300 border border-indigo-500/30'
-                    }`}
-                  >
-                    {s.serviceMode === 'Home Visit' ? '🏡 Home' : '🏬 Shop'}
-                  </span>
-                </div>
-              </div>
-
-              {/* Card Body */}
-              <div className="flex flex-1 flex-col p-4">
-                <div className="flex items-center justify-between text-xs text-slate-500">
-                  <span className="flex items-center gap-1 truncate">
-                    <MapPinIcon className="h-3.5 w-3.5 text-slate-400 shrink-0" />
-                    {s.serviceArea}
-                  </span>
-                  <span className="flex items-center gap-1 shrink-0">
-                    <ClockIcon className="h-3.5 w-3.5 text-slate-400" />
-                    {s.estimatedDuration}
-                  </span>
-                </div>
-
-                <h3 className="mt-2 line-clamp-2 text-sm font-bold text-slate-900 group-hover:text-blue-600 transition-colors">
-                  {s.title}
-                </h3>
-
-                <p className="mt-1 line-clamp-2 text-xs text-slate-500 leading-relaxed">
-                  {s.description}
-                </p>
-
-                {/* Technician metadata */}
-                <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-2.5">
-                  <div className="flex items-center gap-2">
-                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 text-[10px] font-bold text-blue-700">
-                      {s.technicianName?.charAt(0) || 'T'}
-                    </div>
-                    <span className="text-xs font-medium text-slate-700 truncate max-w-[110px]">
-                      {s.technicianName}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-0.5 text-amber-500 text-xs font-semibold">
-                    <StarIcon className="h-3 w-3 fill-current" />
-                    <span>4.9</span>
-                  </div>
-                </div>
-
-                {/* Price & Action */}
-                <div className="mt-auto border-t border-slate-100 pt-3 flex items-center justify-between">
-                  <div>
-                    <span className="text-[10px] uppercase text-slate-400">Starting at</span>
-                    <p className="text-base font-extrabold text-slate-900">${s.basePrice}</p>
-                  </div>
-                  <span className="inline-flex items-center gap-1 rounded-xl bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white group-hover:bg-blue-600 transition">
-                    <span>View</span>
-                    <ArrowRightIcon className="h-3 w-3" />
-                  </span>
-                </div>
-              </div>
-            </Link>
+          {services.map((s, index) => (
+            <ServiceCard key={s._id} service={s} delay={(index % 4) * 60} />
           ))}
         </div>
+      )}
+
+      {!loading && services.length > 0 && (
+        <p className="mt-10 flex items-center justify-center gap-1.5 text-xs font-medium text-muted-foreground">
+          <CheckIcon className="h-3.5 w-3.5 text-emerald-500" />
+          All listings are admin-approved, ID-verified and covered by a 30-day warranty
+        </p>
       )}
     </div>
   );
@@ -321,7 +261,7 @@ function ServicesList() {
 
 export default function ServicesPage() {
   return (
-    <Suspense fallback={<div className="mx-auto max-w-7xl px-4 py-16" />}>
+    <Suspense fallback={<div className="container-page py-16" />}>
       <ServicesList />
     </Suspense>
   );

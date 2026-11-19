@@ -127,7 +127,7 @@ function SignInForm() {
               <Wrench className="size-5" />
             </span>
           </div>
-          <h1 className="mt-5 text-3xl font-semibold tracking-tight lg:mt-0">
+          <h1 className="mt-5 text-3xl font-bold tracking-tight lg:mt-0">
             Welcome back
           </h1>
           <p className="mt-1.5 text-sm text-muted-foreground">

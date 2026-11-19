@@ -45,7 +45,7 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-border/70 bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/70">
-      <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3.5 sm:px-6">
+      <nav className="container-page flex items-center justify-between py-3.5">
         {/* Brand Logo */}
         <Link href="/" className="group flex items-center gap-2.5 transition">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 text-white shadow-md shadow-blue-500/20 transition-transform group-hover:scale-105">
@@ -111,7 +111,7 @@ export default function Navbar() {
                 </button>
 
                 {menuOpen && (
-                  <div className="absolute right-0 z-50 mt-2 w-64 rounded-2xl border border-border bg-popover p-3 text-popover-foreground shadow-xl">
+                  <div className="animate-in-scale absolute right-0 z-50 mt-2 w-64 origin-top-right rounded-2xl border border-border bg-popover p-3 text-popover-foreground shadow-xl">
                     <div className="border-b border-border pb-3">
                       <p className="truncate text-sm font-semibold text-foreground">{user.name}</p>
                       <p className="truncate text-xs text-muted-foreground">{user.email}</p>
@@ -143,7 +143,6 @@ export default function Navbar() {
                         className="mt-1 flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-sm font-medium text-rose-600 transition hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-500/10"
                       >
                         <span>Sign Out</span>
-                        <span aria-hidden>🚪</span>
                       </button>
                     </div>
                   </div>
@@ -161,7 +160,7 @@ export default function Navbar() {
               </Link>
               <Link
                 href="/sign-up"
-                className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-blue-500/20 transition hover:from-blue-700 hover:to-indigo-700 hover:shadow-md"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-sm shadow-primary/25 transition duration-200 hover:bg-primary/90 hover:shadow-md"
               >
                 <span>Get Started</span>
                 <ArrowRightIcon className="h-4 w-4" />
@@ -189,7 +188,7 @@ export default function Navbar() {
 
       {/* Mobile Drawer Menu */}
       {open && (
-        <div className="border-t border-border bg-background/95 px-4 py-4 shadow-lg backdrop-blur-md md:hidden">
+        <div className="animate-in-scale origin-top border-t border-border bg-background/95 px-4 py-4 shadow-lg backdrop-blur-md md:hidden">
           <div className="flex flex-col gap-1.5">
             {PUBLIC_LINKS.map((l) => (
               <Link

@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import { Service, CATEGORIES } from '@/lib/auth-shared';
+import { SectionHeading } from '@/components/SectionHeading';
+import { ServiceCard } from '@/components/ServiceCard';
 import {
   WrenchIcon,
   SparklesIcon,
@@ -13,10 +15,8 @@ import {
   ClockIcon,
   DollarSignIcon,
   AwardIcon,
-  StarIcon,
   CheckCircleIcon,
   ArrowRightIcon,
-  MapPinIcon,
   ChevronDownIcon,
   UserCheckIcon,
   HeadphonesIcon,
@@ -31,67 +31,58 @@ import {
   ZapIcon,
 } from '@/components/Icons';
 
-/* Category metadata with icons, tags and typical starting price */
 const CATEGORY_META = [
   {
     name: 'Smartphone',
     icon: SmartphoneIcon,
     color: 'from-blue-500 to-cyan-500',
-    lightColor: 'bg-blue-50 text-blue-600',
     price: '$25',
-    desc: 'Screen, Battery, Camera & Logic Board',
+    desc: 'Screen, battery, camera & logic board',
   },
   {
     name: 'Laptop & PC',
     icon: LaptopIcon,
     color: 'from-indigo-500 to-purple-500',
-    lightColor: 'bg-indigo-50 text-indigo-600',
     price: '$35',
-    desc: 'Keyboard, RAM/SSD, OS & Motherboard',
+    desc: 'Keyboard, RAM/SSD, OS & motherboard',
   },
   {
     name: 'AC',
     icon: SnowflakeIcon,
     color: 'from-sky-500 to-blue-600',
-    lightColor: 'bg-sky-50 text-sky-600',
     price: '$30',
-    desc: 'Gas Refill, Master Clean & Compressor',
+    desc: 'Gas refill, master clean & compressor',
   },
   {
     name: 'Refrigerator',
     icon: RefrigeratorIcon,
     color: 'from-cyan-500 to-teal-500',
-    lightColor: 'bg-cyan-50 text-cyan-600',
     price: '$40',
-    desc: 'Cooling Fix, Gas Charge & Thermostat',
+    desc: 'Cooling fix, gas charge & thermostat',
   },
   {
     name: 'TV',
     icon: TvIcon,
     color: 'from-violet-500 to-pink-500',
-    lightColor: 'bg-violet-50 text-violet-600',
     price: '$30',
-    desc: 'Display Panel, Backlight & Sound Card',
+    desc: 'Display panel, backlight & sound card',
   },
   {
     name: 'Washing Machine',
     icon: WashingMachineIcon,
     color: 'from-blue-600 to-indigo-600',
-    lightColor: 'bg-blue-50 text-blue-600',
     price: '$35',
-    desc: 'Drum Repair, Motor, Belt & Drainage',
+    desc: 'Drum repair, motor, belt & drainage',
   },
   {
     name: 'Electrical',
     icon: ZapIcon,
     color: 'from-amber-500 to-orange-500',
-    lightColor: 'bg-amber-50 text-amber-600',
     price: '$20',
-    desc: 'Short Circuit, DB Box & Wiring Inspection',
+    desc: 'Short circuit, DB box & wiring inspection',
   },
 ];
 
-/* Supported Brand Badges */
 const BRANDS = [
   { name: 'Apple', tag: 'iPhone & Mac' },
   { name: 'Samsung', tag: 'Galaxy & Home' },
@@ -105,35 +96,37 @@ const BRANDS = [
   { name: 'Gree', tag: 'AC Specialist' },
 ];
 
-/* 4-Step Process */
 const STEPS = [
   {
     step: '01',
     title: 'Find a Service',
-    description: 'Browse verified technicians, upfront pricing, and real customer reviews across 7 categories.',
+    description:
+      'Browse verified technicians with upfront pricing across 7 repair categories.',
     tag: 'Upfront Quotes',
   },
   {
     step: '02',
     title: 'Send a Request',
-    description: 'Describe the issue and pick your preferred date & time. Zero deposit or advance payment needed.',
+    description:
+      'Describe the issue and pick your preferred date. Zero deposit or advance payment needed.',
     tag: 'No Advance Fee',
   },
   {
     step: '03',
     title: 'Technician Fixes It',
-    description: 'Track your repair status live: Requested → Accepted → In Progress → Completed.',
+    description:
+      'Track every milestone live: Requested → Accepted → In Progress → Completed.',
     tag: 'Live Step Tracker',
   },
   {
     step: '04',
     title: 'Pay After Completion',
-    description: 'Inspect and test your repaired device. Pay online securely via Stripe only when 100% satisfied.',
-    tag: 'Stripe Escrow Safe',
+    description:
+      'Inspect and test your repaired device, then pay securely via Stripe only when satisfied.',
+    tag: 'Stripe Secure',
   },
 ];
 
-/* Diagnostic Issues Helper */
 const DIAGNOSTIC_ISSUES = [
   {
     id: 'phone-screen',
@@ -182,67 +175,77 @@ const DIAGNOSTIC_ISSUES = [
   },
 ];
 
-/* Why Choose FixMate */
 const TRUST_POINTS = [
   {
     icon: ShieldCheckIcon,
     title: '100% Pay-After-Service',
-    description: 'Your money stays safe. Pay online with Stripe test card only after the technician finishes the job and you inspect it.',
+    description:
+      'Your money stays safe. Pay online with Stripe only after the technician finishes and you inspect the job.',
     badge: 'Zero Risk',
+    accent: 'bg-blue-500/10 text-blue-600 ring-blue-500/20 dark:text-blue-400',
   },
   {
     icon: UserCheckIcon,
     title: 'Verified & Vetted Specialists',
-    description: 'Every technician undergoes government ID verification, background checks, and technical skill scrutiny before approval.',
+    description:
+      'Every technician passes ID verification, background checks and a technical skill review before approval.',
     badge: '100% Verified',
+    accent: 'bg-indigo-500/10 text-indigo-600 ring-indigo-500/20 dark:text-indigo-400',
   },
   {
     icon: AwardIcon,
     title: '30-Day Service Warranty',
-    description: 'All repairs come with a complimentary 30-day warranty on workmanship and installed spare parts.',
+    description:
+      'All repairs include a complimentary 30-day warranty on workmanship and installed spare parts.',
     badge: 'Warranty Backed',
+    accent: 'bg-violet-500/10 text-violet-600 ring-violet-500/20 dark:text-violet-400',
   },
   {
     icon: DollarSignIcon,
     title: 'Transparent Starting Prices',
-    description: 'Clear base prices upfront with no hidden surcharge. The agreed quote upon completion is what you pay.',
+    description:
+      'Clear base prices upfront with no hidden surcharge — the agreed amount at completion is what you pay.',
     badge: 'No Surprises',
+    accent: 'bg-emerald-500/10 text-emerald-600 ring-emerald-500/20 dark:text-emerald-400',
   },
   {
     icon: ClockIcon,
     title: 'Home Visit & Drop-Off Options',
-    description: 'Choose convenient on-site doorstep visits for heavy appliances or secure shop drop-offs for precision micro-soldering.',
+    description:
+      'Choose on-site doorstep visits for heavy appliances or secure shop drop-offs for precision work.',
     badge: 'Flexible Modes',
+    accent: 'bg-amber-500/10 text-amber-600 ring-amber-500/20 dark:text-amber-400',
   },
   {
     icon: HeadphonesIcon,
     title: 'Dedicated Customer Care',
-    description: 'Prompt support via phone and email to guide your booking, resolve concerns, and ensure smooth delivery.',
+    description:
+      'Prompt support by phone and email to guide your booking, resolve concerns and ensure smooth delivery.',
     badge: '24/7 Assistance',
+    accent: 'bg-rose-500/10 text-rose-600 ring-rose-500/20 dark:text-rose-400',
   },
 ];
 
-/* Frequently Asked Questions */
 const FAQS = [
   {
     q: 'How does the Pay-After-Service model work?',
-    a: 'When you submit a repair request, you pay $0 upfront. The technician accepts, works on your device, and only sets the final amount once the work is completed. A "Pay Now" button then appears on your bookings dashboard so you can pay securely via Stripe after testing your device.',
+    a: 'When you submit a repair request you pay $0 upfront. The technician accepts the job, works on your device and only sets the final amount once the work is completed. A "Pay Now" button then appears in your bookings dashboard so you can pay securely via Stripe after testing your device.',
   },
   {
     q: 'How are technicians verified on FixMate?',
-    a: 'Every technician must submit their national ID/passport, trade certification, workshop address, and phone number. FixMate admins manually inspect and approve service listings before they appear on the public marketplace.',
+    a: 'Every technician submits their national ID, trade certification, workshop address and phone number. FixMate admins manually inspect and approve every service listing before it appears on the public marketplace.',
   },
   {
     q: 'Can I cancel my repair request if plans change?',
-    a: 'Yes! You can cancel any repair request at any time while its status is still "Requested". Once a technician has accepted and begun work, you can coordinate with them directly via their contact info.',
+    a: 'Yes. You can cancel any repair request while its status is still "Requested". Once a technician has accepted and begun work, you can coordinate with them directly through their contact information.',
   },
   {
     q: 'What is the difference between Home Visit and Shop Drop-off?',
-    a: 'Home Visit means the technician visits your home or office with portable tools (ideal for AC, TV, Refrigerator, and Washing Machines). Shop Drop-off allows you to deliver your device directly to the technician’s verified service center.',
+    a: 'Home Visit means the technician visits your home or office with portable tools — ideal for AC, TV, refrigerators and washing machines. Shop Drop-off lets you deliver your device directly to the technician’s verified service centre.',
   },
   {
     q: 'Are replacement parts covered by a warranty?',
-    a: 'Yes. All completed repair services booked through FixMate carry a standard 30-day service warranty covering both technician workmanship and replaced hardware components.',
+    a: 'Yes. Every completed repair booked through FixMate carries a standard 30-day service warranty covering both technician workmanship and replaced hardware components.',
   },
 ];
 
@@ -250,16 +253,10 @@ export default function HomePage() {
   const router = useRouter();
   const [featured, setFeatured] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
-
-  // Search Bar State
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedMode, setSelectedMode] = useState('');
-
-  // Diagnostic Widget State
   const [activeIssue, setActiveIssue] = useState(DIAGNOSTIC_ISSUES[0]);
-
-  // FAQ Accordion State
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
 
   useEffect(() => {
@@ -280,211 +277,186 @@ export default function HomePage() {
 
   return (
     <div className="bg-background text-foreground">
-      {/* =========================================================================
-          SECTION 1: HERO SECTION WITH INTERACTIVE SEARCH & TRUST PANEL
-         ========================================================================= */}
       <section className="relative overflow-hidden bg-[#070c1a] text-white">
-        {/* Backdrop: grid, glows, top highlight */}
         <div
           className="pointer-events-none absolute inset-0 opacity-70"
           style={{
             backgroundImage:
               'linear-gradient(to right, rgba(148,163,184,0.10) 1px, transparent 1px), linear-gradient(to bottom, rgba(148,163,184,0.10) 1px, transparent 1px)',
             backgroundSize: '64px 64px',
-            maskImage: 'radial-gradient(ellipse 75% 65% at 50% 25%, black 20%, transparent 78%)',
+            maskImage: 'radial-gradient(ellipse 80% 70% at 30% 20%, black 15%, transparent 75%)',
             WebkitMaskImage:
-              'radial-gradient(ellipse 75% 65% at 50% 25%, black 20%, transparent 78%)',
+              'radial-gradient(ellipse 80% 70% at 30% 20%, black 15%, transparent 75%)',
           }}
         />
-        <div className="pointer-events-none absolute -top-48 left-1/2 h-[560px] w-[1000px] -translate-x-1/2 rounded-full bg-blue-600/20 blur-[140px]" />
-        <div className="pointer-events-none absolute top-1/4 -right-24 h-80 w-80 rounded-full bg-indigo-500/15 blur-[110px]" />
-        <div className="pointer-events-none absolute -bottom-24 -left-24 h-80 w-80 rounded-full bg-cyan-500/10 blur-[110px]" />
+        <div className="pointer-events-none absolute -top-40 left-1/4 h-[520px] w-[720px] rounded-full bg-blue-600/25 blur-[140px]" />
+        <div className="pointer-events-none absolute top-1/3 -right-32 h-80 w-80 rounded-full bg-indigo-500/20 blur-[110px]" />
         <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-blue-400/40 to-transparent" />
 
-        <div className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-24 lg:py-28">
-          <div>
-            {/* Hero content */}
-            <div className="mx-auto max-w-3xl text-center">
-              <div className="inline-flex items-center gap-2.5 rounded-full border border-white/10 bg-white/[0.06] px-3.5 py-1.5 text-xs font-medium text-slate-300 backdrop-blur">
-                <span className="relative flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
-                </span>
-                Verified technicians across 7 repair categories
-              </div>
+        <div className="container-page relative py-16 text-center sm:py-20 lg:py-24">
+          <div className="mx-auto max-w-4xl" data-aos="fade-up">
+            <span className="eyebrow-dark">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+              </span>
+              Verified technicians across 7 repair categories
+            </span>
 
-              <h1 className="mt-6 text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-[3.5rem] lg:leading-[1.08]">
-                Broken device?
-                <span className="mt-2 block bg-gradient-to-r from-blue-300 via-cyan-200 to-indigo-300 bg-clip-text text-transparent">
-                  Fixed by verified experts.
-                </span>
-              </h1>
+            <h1 className="mx-auto mt-6 max-w-3xl text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl lg:leading-[1.06]">
+              Broken device?
+              <span className="mt-2 block bg-gradient-to-r from-blue-300 via-cyan-200 to-indigo-300 bg-clip-text text-transparent">
+                Fixed by verified experts.
+              </span>
+            </h1>
 
-              <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-slate-400 sm:text-lg">
-                Book trusted local technicians for phones, laptops, ACs, fridges, TVs and
-                washing machines. Track every milestone and{' '}
-                <strong className="font-semibold text-slate-200">
-                  pay only after the repair is complete
-                </strong>
-                .
-              </p>
-
-              {/* Search card */}
-              <form
-                onSubmit={handleSearchSubmit}
-                className="mt-8 rounded-2xl border border-white/10 bg-white/[0.06] p-2 shadow-2xl shadow-blue-950/40 backdrop-blur-xl"
-              >
-                <div className="grid gap-2 sm:grid-cols-12">
-                  <div className="relative sm:col-span-4">
-                    <SearchIcon className="pointer-events-none absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2 text-slate-400" />
-                    <input
-                      type="text"
-                      placeholder="Search e.g. iPhone screen"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      aria-label="Search services"
-                      className="h-11 w-full rounded-xl border border-white/10 bg-white/[0.04] pr-3 pl-10 text-sm text-white placeholder:text-slate-400 outline-none transition hover:bg-white/[0.07] focus:border-blue-400/60 focus:bg-white/10 focus:ring-2 focus:ring-blue-400/20"
-                    />
-                  </div>
-
-                  <div className="sm:col-span-3">
-                    <select
-                      value={selectedCategory}
-                      onChange={(e) => setSelectedCategory(e.target.value)}
-                      aria-label="Filter by category"
-                      className="h-11 w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 text-sm text-slate-200 outline-none transition hover:bg-white/[0.07] focus:border-blue-400/60 focus:bg-white/10 focus:ring-2 focus:ring-blue-400/20 [&>option]:bg-slate-900 [&>option]:text-slate-100"
-                    >
-                      <option value="">All categories</option>
-                      {CATEGORIES.map((c) => (
-                        <option key={c} value={c}>
-                          {c}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="sm:col-span-3">
-                    <select
-                      value={selectedMode}
-                      onChange={(e) => setSelectedMode(e.target.value)}
-                      aria-label="Filter by service mode"
-                      className="h-11 w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 text-sm text-slate-200 outline-none transition hover:bg-white/[0.07] focus:border-blue-400/60 focus:bg-white/10 focus:ring-2 focus:ring-blue-400/20 [&>option]:bg-slate-900 [&>option]:text-slate-100"
-                    >
-                      <option value="">Any mode</option>
-                      <option value="Home Visit">Home Visit</option>
-                      <option value="Shop Drop-off">Shop Drop-off</option>
-                    </select>
-                  </div>
-
-                  <div className="sm:col-span-2">
-                    <button
-                      type="submit"
-                      className="flex h-11 w-full items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-3 text-sm font-semibold text-white shadow-lg shadow-blue-600/25 transition hover:from-blue-500 hover:to-indigo-500 focus:outline-none focus:ring-2 focus:ring-blue-400/60 focus:ring-offset-2 focus:ring-offset-[#070c1a]"
-                    >
-                      <span>Search</span>
-                      <ArrowRightIcon className="h-4 w-4" />
-                    </button>
-                  </div>
-                </div>
-              </form>
-
-              {/* Trending searches */}
-              <div className="mt-4 flex flex-wrap items-center justify-center gap-2 text-xs">
-                <span className="text-slate-400">Trending:</span>
-                {[
-                  { label: 'iPhone Screen', cat: 'Smartphone' },
-                  { label: 'MacBook Motherboard', cat: 'Laptop & PC' },
-                  { label: 'AC Master Clean', cat: 'AC' },
-                  { label: 'Fridge Gas', cat: 'Refrigerator' },
-                  { label: 'TV Backlight', cat: 'TV' },
-                ].map((tag) => (
-                  <button
-                    key={tag.label}
-                    type="button"
-                    onClick={() => {
-                      setSearchQuery(tag.label);
-                      setSelectedCategory(tag.cat);
-                      router.push(
-                        `/services?category=${encodeURIComponent(tag.cat)}&search=${encodeURIComponent(tag.label)}`,
-                      );
-                    }}
-                    className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-slate-300 transition hover:border-blue-400/40 hover:bg-white/10 hover:text-white"
-                  >
-                    {tag.label}
-                  </button>
-                ))}
-              </div>
-
-              {/* Trust notes */}
-              <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 border-t border-white/10 pt-6 text-xs text-slate-400">
-                <span className="flex items-center gap-2">
-                  <CheckIcon className="h-4 w-4 text-emerald-400" />
-                  ID-verified technicians
-                </span>
-                <span className="flex items-center gap-2">
-                  <CheckIcon className="h-4 w-4 text-emerald-400" />
-                  No upfront payment
-                </span>
-                <span className="flex items-center gap-2">
-                  <CheckIcon className="h-4 w-4 text-emerald-400" />
-                  30-day warranty
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* =========================================================================
-          SECTION 2: BRAND & APPLIANCE COVERAGE STRIP
-         ========================================================================= */}
-      <section className="border-y border-slate-200/80 bg-white py-6">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <p className="text-center text-xs font-semibold tracking-wider uppercase text-slate-400">
-            Certified Repair Specialists for All Major Global Brands
-          </p>
-          <div className="mt-4 flex flex-wrap items-center justify-center gap-3 sm:gap-6">
-            {BRANDS.map((b) => (
-              <div
-                key={b.name}
-                className="flex items-center gap-2 rounded-xl border border-border/60 bg-muted/40 px-3.5 py-1.5 text-xs font-semibold text-foreground/80 shadow-xs hover:border-blue-400 hover:text-blue-600 transition"
-              >
-                <span>{b.name}</span>
-                <span className="text-[10px] text-slate-400 font-normal">({b.tag})</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* =========================================================================
-          SECTION 3: POPULAR CATEGORIES (ALL 7 SPEC CATEGORIES)
-         ========================================================================= */}
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-20">
-        <div data-aos="fade-up" className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-          <div>
-            <div className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
-              <WrenchIcon className="h-3.5 w-3.5" />
-              <span>Explore Categories</span>
-            </div>
-            <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
-              Popular Repair Categories
-            </h2>
-            <p className="mt-2 text-slate-500 max-w-xl">
-              Select your appliance or device to view verified technicians, upfront base pricing, and home visit options.
+            <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg">
+              Book trusted local technicians for phones, laptops, ACs, fridges, TVs and
+              washing machines. Track every milestone and{' '}
+              <strong className="font-semibold text-white">
+                pay only after the repair is complete
+              </strong>
+              .
             </p>
-          </div>
-          <Link
-            href="/services"
-            className="inline-flex items-center gap-1.5 text-sm font-semibold text-blue-600 hover:text-blue-800 transition"
-          >
-            <span>All Services</span>
-            <ArrowRightIcon className="h-4 w-4" />
-          </Link>
-        </div>
 
-        {/* Categories Grid */}
-        <div className="mt-10 grid gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+            <form
+              onSubmit={handleSearchSubmit}
+              className="mx-auto mt-9 max-w-4xl rounded-2xl border border-white/10 bg-white/[0.06] p-3 shadow-2xl shadow-blue-950/40 backdrop-blur-xl"
+            >
+              <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-[1.6fr_1fr_1fr_auto] lg:items-center">
+                <div className="relative sm:col-span-2 lg:col-span-1">
+                  <SearchIcon className="pointer-events-none absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                  <input
+                    type="text"
+                    placeholder="Search e.g. iPhone screen replacement"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    aria-label="Search services"
+                    className="hero-field pl-10"
+                  />
+                </div>
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  aria-label="Filter by category"
+                  className="hero-field [&>option]:bg-slate-900 [&>option]:text-slate-100"
+                >
+                  <option value="">All categories</option>
+                  {CATEGORIES.map((c) => (
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  value={selectedMode}
+                  onChange={(e) => setSelectedMode(e.target.value)}
+                  aria-label="Filter by service mode"
+                  className="hero-field [&>option]:bg-slate-900 [&>option]:text-slate-100"
+                >
+                  <option value="">Any mode</option>
+                  <option value="Home Visit">Home Visit</option>
+                  <option value="Shop Drop-off">Shop Drop-off</option>
+                </select>
+                <button
+                  type="submit"
+                  className="flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 px-5 text-sm font-semibold whitespace-nowrap text-white shadow-lg shadow-blue-600/25 transition duration-200 hover:from-blue-400 hover:to-indigo-400 active:translate-y-px focus:ring-2 focus:ring-blue-400/60 focus:ring-offset-2 focus:ring-offset-[#070c1a] focus:outline-none"
+                >
+                  <span>Search</span>
+                  <ArrowRightIcon className="h-4 w-4" />
+                </button>
+              </div>
+            </form>
+
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-2 text-xs">
+              <span className="text-slate-400">Trending:</span>
+              {[
+                { label: 'iPhone Screen', cat: 'Smartphone' },
+                { label: 'MacBook Motherboard', cat: 'Laptop & PC' },
+                { label: 'AC Master Clean', cat: 'AC' },
+                { label: 'Fridge Gas', cat: 'Refrigerator' },
+                { label: 'TV Backlight', cat: 'TV' },
+              ].map((tag) => (
+                <button
+                  key={tag.label}
+                  type="button"
+                  onClick={() =>
+                    router.push(
+                      `/services?category=${encodeURIComponent(tag.cat)}&search=${encodeURIComponent(tag.label)}`,
+                    )
+                  }
+                  className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-1.5 text-slate-300 transition duration-200 hover:border-blue-400/50 hover:bg-white/10 hover:text-white"
+                >
+                  {tag.label}
+                </button>
+              ))}
+            </div>
+
+            <div className="mx-auto mt-9 flex max-w-2xl flex-wrap items-center justify-center gap-x-6 gap-y-3 border-t border-white/10 pt-6 text-xs font-medium text-slate-300">
+              <span className="flex items-center gap-2">
+                <CheckIcon className="h-4 w-4 text-emerald-400" />
+                ID-verified technicians
+              </span>
+              <span className="flex items-center gap-2">
+                <CheckIcon className="h-4 w-4 text-emerald-400" />
+                No upfront payment
+              </span>
+              <span className="flex items-center gap-2">
+                <CheckIcon className="h-4 w-4 text-emerald-400" />
+                30-day warranty
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="border-b border-border bg-card">
+        <div className="container-page py-7">
+          <p className="text-center text-xs font-semibold tracking-[0.16em] text-muted-foreground uppercase">
+            Certified repair specialists for all major global brands
+          </p>
+          <div className="marquee-paused edge-fade-x mt-5 overflow-hidden">
+            <div className="animate-marquee flex w-max">
+              {[0, 1].map((half) => (
+                <div
+                  key={half}
+                  aria-hidden={half === 1}
+                  className="flex shrink-0 items-center gap-2.5 pr-2.5 sm:gap-3 sm:pr-3"
+                >
+                  {BRANDS.map((b) => (
+                    <span
+                      key={b.name}
+                      className="flex items-baseline gap-1.5 whitespace-nowrap rounded-full border border-border bg-background px-4 py-1.5 text-sm transition-colors duration-200 hover:border-primary/40 hover:text-primary"
+                    >
+                      <span className="font-bold text-foreground">{b.name}</span>
+                      <span className="hidden text-[11px] font-normal text-muted-foreground sm:inline">
+                        {b.tag}
+                      </span>
+                    </span>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="container-page py-16 sm:py-20">
+        <SectionHeading
+          eyebrow="Explore Categories"
+          icon={WrenchIcon}
+          title="Popular Repair Categories"
+          description="Select your device or appliance to view verified technicians, upfront base pricing and home visit options."
+          align="left"
+          action={
+            <Link href="/services" className="link-arrow">
+              All Services
+              <ArrowRightIcon className="h-4 w-4" />
+            </Link>
+          }
+        />
+
+        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {CATEGORY_META.map((cat, index) => {
             const Icon = cat.icon;
             return (
@@ -492,345 +464,273 @@ export default function HomePage() {
                 key={cat.name}
                 href={`/services?category=${encodeURIComponent(cat.name)}`}
                 data-aos="fade-up"
-                data-aos-delay={index * 60}
-                className="group relative flex flex-col justify-between rounded-3xl border border-slate-200/80 bg-white p-6 shadow-xs hover:border-blue-400 hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-300"
+                data-aos-delay={(index % 4) * 60}
+                className="group flex h-full flex-col justify-between rounded-2xl border border-border/70 bg-card p-6 shadow-xs transition duration-300 ease-out hover:-translate-y-1.5 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
               >
                 <div>
-                  {/* Category Radiant Icon */}
-                  <div
-                    className={`flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-tr ${cat.color} text-white shadow-md shadow-blue-500/20 group-hover:scale-110 transition-transform`}
+                  <span
+                    className={`flex size-12 items-center justify-center rounded-2xl bg-gradient-to-br ${cat.color} text-white shadow-md shadow-slate-900/10 transition-transform duration-300 group-hover:scale-105 group-hover:-rotate-3`}
                   >
                     <Icon className="h-6 w-6" />
-                  </div>
-
-                  <h3 className="mt-4 text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors">
+                  </span>
+                  <h3 className="mt-4 text-base font-bold tracking-tight text-foreground transition-colors duration-200 group-hover:text-primary">
                     {cat.name}
                   </h3>
-                  <p className="mt-1 text-xs text-slate-500 leading-relaxed">{cat.desc}</p>
+                  <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+                    {cat.desc}
+                  </p>
                 </div>
-
-                <div className="mt-6 flex items-center justify-between border-t border-slate-100 pt-4">
-                  <span className="text-xs font-bold text-slate-800">Starting from {cat.price}</span>
-                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-50 text-slate-400 group-hover:bg-blue-600 group-hover:text-white transition">
-                    <ArrowRightIcon className="h-3.5 w-3.5" />
-                  </div>
+                <div className="mt-6 flex items-center justify-between border-t border-border/60 pt-4">
+                  <span className="text-xs font-bold text-foreground">
+                    From {cat.price}
+                  </span>
+                  <span className="flex size-7 items-center justify-center rounded-full bg-muted text-muted-foreground transition duration-300 group-hover:bg-primary group-hover:text-primary-foreground">
+                    <ArrowRightIcon className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5" />
+                  </span>
                 </div>
               </Link>
             );
           })}
 
-          {/* Bonus "Can't Find Yours?" Card */}
           <Link
             href="/services"
             data-aos="fade-up"
-            data-aos-delay={CATEGORY_META.length * 60}
-            className="flex flex-col justify-between rounded-3xl border border-dashed border-border bg-muted/40 p-6 hover:border-blue-400 hover:bg-blue-50/40 dark:hover:bg-blue-500/10 transition"
+            data-aos-delay={(CATEGORY_META.length % 4) * 60}
+            className="group flex h-full flex-col justify-between rounded-2xl border border-dashed border-border bg-muted/40 p-6 transition duration-300 ease-out hover:-translate-y-1.5 hover:border-primary/40 hover:bg-primary/5"
           >
             <div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-200 text-slate-600">
+              <span className="flex size-12 items-center justify-center rounded-2xl bg-muted text-muted-foreground ring-1 ring-border transition duration-300 group-hover:bg-primary/10 group-hover:text-primary">
                 <HelpCircleIcon className="h-6 w-6" />
-              </div>
-              <h3 className="mt-4 text-lg font-bold text-slate-900">Need Custom Service?</h3>
-              <p className="mt-1 text-xs text-slate-500">
-                Browse our full directory or request a custom diagnosis from our verified technician network.
+              </span>
+              <h3 className="mt-4 text-base font-bold tracking-tight text-foreground transition-colors duration-200 group-hover:text-primary">
+                Need a Custom Service?
+              </h3>
+              <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+                Browse the full directory or request a diagnosis from our verified
+                technician network.
               </p>
             </div>
-            <div className="mt-6 flex items-center gap-1.5 text-xs font-bold text-blue-600">
-              <span>View All Services Directory</span>
-              <ArrowRightIcon className="h-3.5 w-3.5" />
-            </div>
+            <span className="mt-6 flex items-center gap-1.5 border-t border-border/60 pt-4 text-xs font-bold text-primary">
+              View all services
+              <ArrowRightIcon className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
+            </span>
           </Link>
         </div>
       </section>
 
-      {/* =========================================================================
-          SECTION 4: DYNAMIC FEATURED SERVICES (6 APPROVED SERVICES)
-         ========================================================================= */}
-      <section className="bg-white py-16 sm:py-20 border-y border-slate-200/80">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <div data-aos="fade-up" className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-            <div>
-              <div className="inline-flex items-center gap-1.5 rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700">
-                <SparklesIcon className="h-3.5 w-3.5" />
-                <span>Verified & Approved Listings</span>
-              </div>
-              <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
-                Featured Repair Services
-              </h2>
-              <p className="mt-2 text-slate-500 max-w-xl">
-                Handpicked top-rated repair services from certified technicians with verified customer reviews.
-              </p>
-            </div>
-            <Link
-              href="/services"
-              className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-800 shadow-xs hover:border-blue-400 hover:text-blue-600 transition"
-            >
-              <span>Explore All Services</span>
-              <ArrowRightIcon className="h-4 w-4" />
-            </Link>
-          </div>
+      <section className="border-y border-border bg-card py-16 sm:py-20">
+        <div className="container-page">
+          <SectionHeading
+            eyebrow="Verified & Approved Listings"
+            icon={SparklesIcon}
+            title="Featured Repair Services"
+            description="Handpicked services from certified technicians, approved by our admins and ready to book today."
+            align="left"
+            action={
+              <Link href="/services" className="btn-outline">
+                Explore All Services
+                <ArrowRightIcon className="h-4 w-4" />
+              </Link>
+            }
+          />
 
-          {/* Cards Grid */}
           {loading ? (
-            <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="h-96 animate-pulse rounded-3xl bg-slate-100" />
+                <div key={i} className="skeleton h-[24rem]" />
               ))}
             </div>
           ) : featured.length === 0 ? (
-            <div className="mt-10 rounded-3xl border border-dashed border-slate-300 bg-white p-12 text-center">
-              <p className="text-sm font-semibold text-slate-900">No services available yet</p>
-              <p className="mt-1 text-xs text-slate-500">
+            <div className="panel mt-12 border-dashed p-12 text-center">
+              <p className="text-base font-semibold text-foreground">
+                No services available yet
+              </p>
+              <p className="mt-1.5 text-sm text-muted-foreground">
                 Approved services will appear here as technicians join the platform.
               </p>
             </div>
           ) : (
-            <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {featured.map((s, index) => (
-                <Link
-                  key={s._id}
-                  href={`/services/${s._id}`}
-                  data-aos="fade-up"
-                  data-aos-delay={(index % 3) * 80}
-                  className="group flex flex-col h-full overflow-hidden rounded-3xl border border-slate-200/90 bg-white shadow-xs hover:border-blue-400 hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300"
-                >
-                  {/* Service Banner Image */}
-                  <div className="relative h-48 w-full overflow-hidden bg-slate-100">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={s.image}
-                      alt={s.title}
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                    <div className="absolute top-3 left-3 flex gap-2">
-                      <span className="rounded-full bg-slate-900/80 px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur-md">
-                        {s.category}
-                      </span>
-                    </div>
-                    <div className="absolute top-3 right-3">
-                      <span
-                        className={`rounded-full px-2.5 py-1 text-[11px] font-semibold backdrop-blur-md ${
-                          s.serviceMode === 'Home Visit'
-                            ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-500/30'
-                            : 'bg-indigo-950/80 text-indigo-300 border border-indigo-500/30'
-                        }`}
-                      >
-                        {s.serviceMode === 'Home Visit' ? '🏡 Home Visit' : '🏬 Shop Drop-off'}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Card Content */}
-                  <div className="flex flex-1 flex-col p-5">
-                    {/* Service Area & Duration */}
-                    <div className="flex items-center justify-between text-xs text-slate-500">
-                      <span className="flex items-center gap-1 truncate">
-                        <MapPinIcon className="h-3.5 w-3.5 text-slate-400 shrink-0" />
-                        {s.serviceArea}
-                      </span>
-                      <span className="flex items-center gap-1 shrink-0">
-                        <ClockIcon className="h-3.5 w-3.5 text-slate-400" />
-                        {s.estimatedDuration}
-                      </span>
-                    </div>
-
-                    {/* Title */}
-                    <h3 className="mt-2.5 line-clamp-1 text-base font-bold text-slate-900 group-hover:text-blue-600 transition-colors">
-                      {s.title}
-                    </h3>
-
-                    {/* Description */}
-                    <p className="mt-1 line-clamp-2 text-xs text-slate-500 leading-relaxed">
-                      {s.description}
-                    </p>
-
-                    {/* Technician Info */}
-                    <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-3">
-                      <div className="flex items-center gap-2">
-                        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-blue-700">
-                          {s.technicianName?.charAt(0) || 'T'}
-                        </div>
-                        <div>
-                          <p className="text-xs font-semibold text-slate-800">{s.technicianName}</p>
-                          <p className="text-[10px] text-emerald-600 font-medium">Verified Specialist</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-1 text-amber-500 text-xs font-semibold">
-                        <StarIcon className="h-3.5 w-3.5 fill-current" />
-                        <span>4.9</span>
-                      </div>
-                    </div>
-
-                    {/* Price & Action Button */}
-                    <div className="mt-auto border-t border-slate-100 pt-3 flex items-center justify-between">
-                      <div>
-                        <span className="text-[10px] font-medium uppercase text-slate-400">Starting at</span>
-                        <p className="text-lg font-extrabold text-slate-900">${s.basePrice}</p>
-                      </div>
-                      <div className="inline-flex items-center gap-1 rounded-xl bg-slate-900 px-3.5 py-2 text-xs font-semibold text-white group-hover:bg-blue-600 transition">
-                        <span>Details</span>
-                        <ArrowRightIcon className="h-3.5 w-3.5" />
-                      </div>
-                    </div>
-                  </div>
-                </Link>
+                <ServiceCard key={s._id} service={s} delay={(index % 3) * 80} />
               ))}
             </div>
           )}
         </div>
       </section>
 
-      {/* =========================================================================
-          SECTION 5: HOW FIXMATE WORKS (4-STEP VISUAL WORKFLOW)
-         ========================================================================= */}
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-24">
-        <div data-aos="fade-up" className="text-center">
-          <div className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
-            <ClockIcon className="h-3.5 w-3.5" />
-            <span>Simple & Trackable Flow</span>
-          </div>
-          <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
-            How FixMate Works
-          </h2>
-          <p className="mx-auto mt-3 max-w-2xl text-slate-500">
-            A transparent 4-stage journey engineered to eliminate guesswork, eliminate advance fees, and give you complete control.
-          </p>
-        </div>
+      <section className="container-page py-16 sm:py-20">
+        <SectionHeading
+          eyebrow="Simple & Trackable Flow"
+          icon={ClockIcon}
+          title="How FixMate Works"
+          description="A transparent 4-stage journey engineered to eliminate guesswork, remove advance fees and give you complete control."
+        />
 
-        {/* 4-Step Cards */}
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {STEPS.map((s, index) => (
             <div
               key={s.step}
               data-aos="fade-up"
               data-aos-delay={index * 70}
-              className="relative flex flex-col justify-between rounded-3xl border border-slate-200/80 bg-white p-7 shadow-xs hover:border-blue-400 hover:shadow-lg transition"
+              className="flex h-full flex-col rounded-2xl border border-border/70 bg-card p-6 shadow-xs transition duration-300 ease-out hover:-translate-y-1.5 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10"
             >
-              <div>
-                <div className="flex items-center justify-between">
-                  <span className="text-2xl font-black text-blue-600 tracking-tight">{s.step}</span>
-                  <span className="rounded-full bg-blue-50 px-2.5 py-0.5 text-[10px] font-semibold text-blue-700">
-                    {s.tag}
-                  </span>
-                </div>
-                <h3 className="mt-4 text-lg font-bold text-slate-900">{s.title}</h3>
-                <p className="mt-2 text-xs leading-relaxed text-slate-500">{s.description}</p>
+              <div className="flex items-center justify-between">
+                <span className="flex size-11 items-center justify-center rounded-xl bg-primary/10 text-base font-extrabold tracking-tight text-primary">
+                  {s.step}
+                </span>
+                <span className="rounded-full bg-muted px-2.5 py-1 text-[11px] font-semibold text-muted-foreground">
+                  {s.tag}
+                </span>
               </div>
-
-              <div className="mt-6 flex items-center gap-2 text-xs font-semibold text-blue-600">
+              <h3 className="mt-5 text-base font-bold tracking-tight text-foreground">
+                {s.title}
+              </h3>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                {s.description}
+              </p>
+              <span className="mt-5 flex items-center gap-1.5 border-t border-border/60 pt-4 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
                 <CheckCircleIcon className="h-4 w-4" />
-                <span>Verified Step</span>
-              </div>
+                Verified step
+              </span>
             </div>
           ))}
         </div>
 
-        {/* Escrow Banner Note */}
-        <div data-aos="fade-up" className="mt-10 rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4 text-center text-xs text-emerald-800 font-medium">
-          🛡️ <strong>FixMate Promise:</strong> You never hand over payment until the technician completes the repair and you verify your device works properly.
+        <div
+          data-aos="fade-up"
+          className="mt-10 flex items-start gap-3 rounded-2xl border border-emerald-200/70 bg-emerald-50 p-4 text-sm leading-relaxed text-emerald-800 dark:border-emerald-500/25 dark:bg-emerald-500/10 dark:text-emerald-300"
+        >
+          <ShieldCheckIcon className="mt-0.5 h-5 w-5 shrink-0 text-emerald-600 dark:text-emerald-400" />
+          <p>
+            <strong className="font-bold">FixMate Promise:</strong> You never hand over
+            payment until the technician completes the repair and you verify your device
+            works properly.
+          </p>
         </div>
       </section>
 
-      {/* =========================================================================
-          SECTION 6: INTERACTIVE ISSUE DIAGNOSTIC FINDER ("WHAT'S WRONG?")
-         ========================================================================= */}
-      <section className="bg-slate-900 text-white py-16 sm:py-20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <div data-aos="fade-up" className="text-center">
-            <div className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3.5 py-1 text-xs font-semibold text-cyan-300 backdrop-blur-md">
-              <SparklesIcon className="h-3.5 w-3.5" />
-              <span>Instant Problem Diagnostic</span>
-            </div>
-            <h2 className="mt-3 text-3xl font-extrabold tracking-tight sm:text-4xl text-white">
-              What Is Wrong With Your Device?
-            </h2>
-            <p className="mx-auto mt-2 max-w-xl text-slate-400 text-sm">
-              Click common symptoms below for an instant preliminary diagnosis, estimated turnaround time, and matching technician bookings.
-            </p>
-          </div>
+      <section className="relative overflow-hidden bg-[#070c1a] py-16 text-white sm:py-20">
+        <div
+          className="pointer-events-none absolute inset-0 opacity-60"
+          style={{
+            backgroundImage:
+              'linear-gradient(to right, rgba(148,163,184,0.08) 1px, transparent 1px), linear-gradient(to bottom, rgba(148,163,184,0.08) 1px, transparent 1px)',
+            backgroundSize: '48px 48px',
+            maskImage: 'radial-gradient(ellipse 70% 60% at 50% 30%, black 10%, transparent 75%)',
+            WebkitMaskImage:
+              'radial-gradient(ellipse 70% 60% at 50% 30%, black 10%, transparent 75%)',
+          }}
+        />
+        <div className="pointer-events-none absolute -top-24 right-0 h-72 w-72 rounded-full bg-cyan-500/15 blur-[100px]" />
 
-          {/* Interactive Picker */}
-          <div className="mt-10 grid gap-6 lg:grid-cols-12 items-start">
-            {/* Left Button Pills */}
-            <div className="lg:col-span-5 flex flex-col gap-2.5" data-aos="fade-right">
+        <div className="container-page relative">
+          <SectionHeading
+            eyebrow="Instant Problem Diagnostic"
+            icon={SparklesIcon}
+            title="What Is Wrong With Your Device?"
+            description="Pick a common symptom for an instant preliminary diagnosis, estimated turnaround time and matching technicians."
+            tone="dark"
+          />
+
+          <div className="mt-12 grid items-start gap-6 lg:grid-cols-12">
+            <div className="flex flex-col gap-2.5 lg:col-span-5" data-aos="fade-right">
               {DIAGNOSTIC_ISSUES.map((issue) => {
                 const active = activeIssue.id === issue.id;
                 return (
                   <button
                     key={issue.id}
                     onClick={() => setActiveIssue(issue)}
-                    className={`flex items-center justify-between rounded-2xl p-4 text-left transition-all ${
+                    className={`flex items-center justify-between rounded-2xl border p-4 text-left transition-all duration-300 ${
                       active
-                        ? 'border border-blue-400/50 bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/20'
-                        : 'border border-slate-800 bg-slate-800/60 text-slate-300 hover:border-slate-700 hover:bg-slate-800'
+                        ? 'border-blue-400/50 bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/25'
+                        : 'border-white/10 bg-white/[0.04] text-slate-300 hover:border-white/25 hover:bg-white/[0.08]'
                     }`}
                   >
                     <div>
-                      <span className="text-[10px] font-semibold uppercase tracking-wider text-cyan-300">
+                      <span
+                        className={`text-[10px] font-bold tracking-[0.14em] uppercase ${
+                          active ? 'text-blue-200' : 'text-cyan-400'
+                        }`}
+                      >
                         {issue.category}
                       </span>
-                      <p className="text-sm font-bold text-white">{issue.label}</p>
+                      <p className="mt-0.5 text-sm font-bold text-white">{issue.label}</p>
                     </div>
-                    <span className="text-xs font-semibold opacity-80">Check →</span>
+                    <ArrowRightIcon
+                      className={`h-4 w-4 shrink-0 transition-transform duration-300 ${
+                        active ? 'translate-x-0.5 text-white' : 'text-slate-500'
+                      }`}
+                    />
                   </button>
                 );
               })}
             </div>
 
-            {/* Right Diagnostic Result Card */}
-            <div className="lg:col-span-7 rounded-3xl border border-white/10 bg-slate-950/90 p-8 backdrop-blur-xl" data-aos="fade-left">
-              <div className="flex items-center justify-between border-b border-white/10 pb-4">
+            <div
+              key={activeIssue.id}
+              className="animate-in-scale rounded-3xl border border-white/10 bg-white/[0.05] p-7 backdrop-blur-xl lg:col-span-7 sm:p-8"
+              data-aos="fade-left"
+            >
+              <div className="flex flex-wrap items-start justify-between gap-3 border-b border-white/10 pb-5">
                 <div>
-                  <span className="text-xs font-semibold uppercase tracking-wider text-blue-400">
+                  <span className="text-[11px] font-bold tracking-[0.14em] text-blue-400 uppercase">
                     Category: {activeIssue.category}
                   </span>
-                  <h3 className="mt-1 text-xl font-bold text-white">{activeIssue.label}</h3>
+                  <h3 className="mt-1.5 text-xl font-bold tracking-tight text-white">
+                    {activeIssue.label}
+                  </h3>
                 </div>
-                <span className="rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-bold text-emerald-400 border border-emerald-500/30">
+                <span className="rounded-full bg-emerald-400/10 px-3.5 py-1.5 text-xs font-bold text-emerald-300 ring-1 ring-emerald-400/25">
                   {activeIssue.price}
                 </span>
               </div>
 
-              <div className="mt-6 space-y-4">
+              <div className="mt-6 space-y-5">
                 <div>
-                  <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                    Symptom Analysis:
+                  <p className="text-[11px] font-bold tracking-[0.14em] text-slate-400 uppercase">
+                    Symptom analysis
                   </p>
-                  <p className="mt-1 text-sm text-slate-200">{activeIssue.symptom}</p>
+                  <p className="mt-1.5 text-sm leading-relaxed text-slate-200">
+                    {activeIssue.symptom}
+                  </p>
                 </div>
-
                 <div>
-                  <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                    Recommended Fix:
+                  <p className="text-[11px] font-bold tracking-[0.14em] text-slate-400 uppercase">
+                    Recommended fix
                   </p>
-                  <p className="mt-1 text-sm text-emerald-300 font-medium">
+                  <p className="mt-1.5 text-sm font-medium leading-relaxed text-emerald-300">
                     {activeIssue.recommendation}
                   </p>
                 </div>
-
-                <div className="grid grid-cols-2 gap-4 rounded-2xl bg-white/5 p-4 border border-white/5">
+                <div className="grid grid-cols-2 gap-4 rounded-2xl border border-white/10 bg-white/[0.04] p-4">
                   <div>
-                    <span className="text-[10px] uppercase text-slate-400">Typical Repair Time</span>
-                    <p className="text-sm font-bold text-white">{activeIssue.time}</p>
+                    <p className="text-[11px] font-medium text-slate-400">
+                      Typical repair time
+                    </p>
+                    <p className="mt-1 text-sm font-bold text-white">
+                      {activeIssue.time}
+                    </p>
                   </div>
                   <div>
-                    <span className="text-[10px] uppercase text-slate-400">Warranty Included</span>
-                    <p className="text-sm font-bold text-emerald-400">30-Day Guarantee</p>
+                    <p className="text-[11px] font-medium text-slate-400">
+                      Warranty included
+                    </p>
+                    <p className="mt-1 text-sm font-bold text-emerald-400">
+                      30-Day Guarantee
+                    </p>
                   </div>
                 </div>
               </div>
 
-              <div className="mt-8 flex flex-col sm:flex-row gap-3">
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <Link
                   href={`/services?category=${encodeURIComponent(activeIssue.category)}`}
-                  className="flex-1 rounded-xl bg-blue-600 px-5 py-3 text-center text-sm font-semibold text-white shadow-lg shadow-blue-500/20 hover:bg-blue-500 transition"
+                  className="btn-primary flex-1 shadow-lg shadow-blue-600/25"
                 >
                   Find {activeIssue.category} Specialists
                 </Link>
-                <Link
-                  href="/services"
-                  className="rounded-xl border border-white/15 bg-white/5 px-5 py-3 text-center text-sm font-semibold text-slate-200 hover:bg-white/10 transition"
-                >
+                <Link href="/services" className="btn-ghost-light">
                   Browse All Services
                 </Link>
               </div>
@@ -839,22 +739,13 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* =========================================================================
-          SECTION 7: WHY CHOOSE FIXMATE (6 CORE TRUST & QUALITY PILLARS)
-         ========================================================================= */}
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-24">
-        <div data-aos="fade-up" className="text-center">
-          <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
-            <ShieldCheckIcon className="h-3.5 w-3.5" />
-            <span>Built On Complete Trust</span>
-          </div>
-          <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
-            Why FixMate is the Smart Choice
-          </h2>
-          <p className="mx-auto mt-3 max-w-2xl text-slate-500">
-            We solved the traditional problems of hidden fees, missing device parts, and poor workmanship through strict platform rules.
-          </p>
-        </div>
+      <section className="container-page py-16 sm:py-20">
+        <SectionHeading
+          eyebrow="Built On Complete Trust"
+          icon={ShieldCheckIcon}
+          title="Why FixMate Is the Smart Choice"
+          description="We solved the traditional problems of hidden fees, missing device parts and poor workmanship through strict platform rules."
+        />
 
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {TRUST_POINTS.map((item, index) => {
@@ -864,75 +755,87 @@ export default function HomePage() {
                 key={item.title}
                 data-aos="fade-up"
                 data-aos-delay={(index % 3) * 70}
-                className="flex flex-col justify-between rounded-3xl border border-slate-200/80 bg-white p-7 shadow-xs hover:border-blue-400 hover:shadow-lg transition"
+                className="group flex h-full flex-col rounded-2xl border border-border/70 bg-card p-6 shadow-xs transition duration-300 ease-out hover:-translate-y-1.5 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10"
               >
-                <div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 text-blue-600">
-                      <Icon className="h-6 w-6" />
-                    </div>
-                    <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-semibold text-slate-700">
-                      {item.badge}
-                    </span>
-                  </div>
-                  <h3 className="mt-5 text-lg font-bold text-slate-900">{item.title}</h3>
-                  <p className="mt-2 text-xs leading-relaxed text-slate-500">{item.description}</p>
+                <div className="flex items-center justify-between gap-3">
+                  <span
+                    className={`flex size-12 items-center justify-center rounded-2xl ring-1 transition-transform duration-300 group-hover:scale-105 ${item.accent}`}
+                  >
+                    <Icon className="h-6 w-6" />
+                  </span>
+                  <span className="rounded-full bg-muted px-2.5 py-1 text-[11px] font-semibold text-muted-foreground">
+                    {item.badge}
+                  </span>
                 </div>
-
-                <div className="mt-6 flex items-center gap-1.5 text-xs font-semibold text-emerald-600">
+                <h3 className="mt-5 text-base font-bold tracking-tight text-foreground">
+                  {item.title}
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                  {item.description}
+                </p>
+                <span className="mt-5 flex items-center gap-1.5 border-t border-border/60 pt-4 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
                   <CheckIcon className="h-3.5 w-3.5" />
-                  <span>Guaranteed Feature</span>
-                </div>
+                  Guaranteed feature
+                </span>
               </div>
             );
           })}
         </div>
       </section>
 
-      {/* =========================================================================
-          SECTION 10: FREQUENTLY ASKED QUESTIONS (ACCORDION)
-         ========================================================================= */}
-      <section className="bg-white py-16 sm:py-20 border-t border-slate-200/80">
+      <section className="border-t border-border bg-card py-16 sm:py-20">
         <div className="mx-auto max-w-4xl px-4 sm:px-6">
-          <div data-aos="fade-up" className="text-center">
-            <div className="inline-flex items-center gap-1.5 rounded-full bg-purple-50 px-3 py-1 text-xs font-semibold text-purple-700">
-              <HelpCircleIcon className="h-3.5 w-3.5" />
-              <span>Got Questions?</span>
-            </div>
-            <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
-              Frequently Asked Questions
-            </h2>
-            <p className="mx-auto mt-2 text-slate-500 text-sm">
-              Everything you need to know about booking, payment safety, and technician warranties.
-            </p>
-          </div>
+          <SectionHeading
+            eyebrow="Got Questions?"
+            icon={HelpCircleIcon}
+            title="Frequently Asked Questions"
+            description="Everything you need to know about booking, payment safety and technician warranties."
+          />
 
-          <div className="mt-10 space-y-3.5">
+          <div className="mt-12 space-y-3">
             {FAQS.map((faq, index) => {
               const isOpen = openFaqIndex === index;
+              const panelId = `faq-panel-${index}`;
+              const buttonId = `faq-button-${index}`;
               return (
                 <div
                   key={index}
                   data-aos="fade-up"
                   data-aos-delay={Math.min(index, 5) * 40}
-                  className="rounded-2xl border border-border/90 bg-muted/40 overflow-hidden transition"
+                  className={`overflow-hidden rounded-2xl border transition-colors duration-300 ${
+                    isOpen
+                      ? 'border-primary/30 bg-background shadow-sm'
+                      : 'border-border/70 bg-background/60'
+                  }`}
                 >
                   <button
                     onClick={() => setOpenFaqIndex(isOpen ? null : index)}
-                    className="flex w-full items-center justify-between p-5 text-left text-sm font-bold text-slate-900 hover:text-blue-600 transition"
+                    aria-expanded={isOpen}
+                    aria-controls={panelId}
+                    id={buttonId}
+                    className="flex w-full items-center justify-between gap-4 p-5 text-left text-sm font-semibold text-foreground transition-colors duration-200 hover:text-primary sm:text-[15px]"
                   >
                     <span>{faq.q}</span>
                     <ChevronDownIcon
-                      className={`h-4 w-4 text-slate-400 transition-transform duration-200 ${
-                        isOpen ? 'rotate-180 text-blue-600' : ''
+                      className={`h-4 w-4 shrink-0 transition-transform duration-300 ${
+                        isOpen ? 'rotate-180 text-primary' : 'text-muted-foreground'
                       }`}
                     />
                   </button>
-                  {isOpen && (
-                    <div className="px-5 pb-5 pt-1 text-xs leading-relaxed text-slate-600 border-t border-slate-100 bg-white">
-                      {faq.a}
+                  <div
+                    id={panelId}
+                    role="region"
+                    aria-labelledby={buttonId}
+                    className={`grid transition-[grid-template-rows] duration-300 ease-out ${
+                      isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
+                    }`}
+                  >
+                    <div className="overflow-hidden">
+                      <p className="border-t border-border/60 px-5 py-4 text-sm leading-relaxed text-muted-foreground">
+                        {faq.a}
+                      </p>
                     </div>
-                  )}
+                  </div>
                 </div>
               );
             })}
@@ -940,56 +843,47 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* =========================================================================
-          SECTION 11: DUAL MARKETPLACE CTA (BECOME A TECHNICIAN PARTNER)
-         ========================================================================= */}
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-20">
+      <section className="container-page py-16 sm:py-20">
         <div
           data-aos="fade-up"
-          className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 p-8 sm:p-12 text-white shadow-xl"
+          className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#0a1122] via-[#0d1730] to-indigo-950 p-8 text-white shadow-xl sm:p-12"
         >
-          <div className="pointer-events-none absolute -right-20 -top-20 h-80 w-80 rounded-full bg-blue-600/20 blur-[100px]" />
+          <div className="pointer-events-none absolute -top-24 -right-16 h-80 w-80 rounded-full bg-blue-600/25 blur-[100px]" />
 
           <div className="relative grid items-center gap-8 lg:grid-cols-12">
             <div className="lg:col-span-8">
-              <span className="inline-block rounded-full bg-blue-500/20 px-3 py-1 text-xs font-semibold text-blue-300 border border-blue-500/30">
-                Technician Partnership Program
-              </span>
-              <h2 className="mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl text-white">
+              <span className="eyebrow-dark">Technician Partnership Program</span>
+              <h2 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">
                 Are You a Skilled Repair Professional?
               </h2>
-              <p className="mt-3 text-sm sm:text-base text-slate-300 max-w-2xl leading-relaxed">
-                Join FixMate to get high-paying customer repair requests in your local area. Enjoy zero listing fees, secure automated Stripe payouts, and complete control over your working schedule.
+              <p className="mt-3 max-w-2xl text-base leading-relaxed text-slate-300">
+                Join FixMate to get high-paying customer repair requests in your local
+                area. Enjoy zero listing fees, secure automated Stripe payouts and
+                complete control over your schedule.
               </p>
 
-              <div className="mt-6 flex flex-wrap gap-4 text-xs text-slate-300">
-                <span className="flex items-center gap-1.5">
+              <div className="mt-6 flex flex-wrap gap-x-6 gap-y-3 text-sm text-slate-300">
+                <span className="flex items-center gap-2">
                   <CheckCircleIcon className="h-4 w-4 text-emerald-400" />
-                  Daily Local Requests
+                  Daily local requests
                 </span>
-                <span className="flex items-center gap-1.5">
+                <span className="flex items-center gap-2">
                   <CheckCircleIcon className="h-4 w-4 text-emerald-400" />
-                  Direct Stripe Bank Payouts
+                  Direct Stripe payouts
                 </span>
-                <span className="flex items-center gap-1.5">
+                <span className="flex items-center gap-2">
                   <CheckCircleIcon className="h-4 w-4 text-emerald-400" />
-                  No Upfront Listing Fee
+                  No upfront listing fee
                 </span>
               </div>
             </div>
 
-            <div className="lg:col-span-4 flex flex-col sm:flex-row lg:flex-col gap-3">
-              <Link
-                href="/sign-up"
-                className="flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3.5 text-center text-sm font-bold text-white shadow-lg shadow-blue-600/30 hover:bg-blue-500 transition"
-              >
-                <span>Register as Technician</span>
+            <div className="flex flex-col gap-3 sm:flex-row lg:col-span-4 lg:flex-col">
+              <Link href="/sign-up" className="btn-light">
+                Register as Technician
                 <ArrowRightIcon className="h-4 w-4" />
               </Link>
-              <Link
-                href="/about"
-                className="flex items-center justify-center rounded-xl border border-white/20 bg-white/5 px-6 py-3.5 text-center text-sm font-semibold text-slate-200 hover:bg-white/10 transition"
-              >
+              <Link href="/about" className="btn-ghost-light">
                 Learn How It Works
               </Link>
             </div>
@@ -997,28 +891,23 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* =========================================================================
-          SECTION 12: FINAL CONVERSION BANNER (READY TO REPAIR?)
-         ========================================================================= */}
-      <section className="bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 py-16 text-white text-center">
-        <div data-aos="fade-up" className="mx-auto max-w-4xl px-4 sm:px-6">
-          <h2 className="text-3xl font-extrabold sm:text-4xl tracking-tight">
+      <section className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 py-16 text-white sm:py-20">
+        <div className="animate-gradient-pan pointer-events-none absolute inset-0 opacity-40" />
+        <div className="pointer-events-none absolute -top-24 left-1/2 h-64 w-[40rem] -translate-x-1/2 rounded-full bg-white/15 blur-[90px]" />
+
+        <div data-aos="fade-up" className="container-page relative text-center">
+          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
             Ready to Get Your Device Restored Today?
           </h2>
-          <p className="mx-auto mt-4 max-w-xl text-blue-100 text-sm sm:text-base leading-relaxed">
-            Browse our catalog of verified technicians across Dhaka and beyond. Remember: zero advance fees and you only pay after complete satisfaction.
+          <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-blue-100">
+            Browse verified technicians across Dhaka and beyond. Zero advance fees — you
+            only pay after complete satisfaction.
           </p>
-          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
-            <Link
-              href="/services"
-              className="w-full sm:w-auto rounded-xl bg-white px-8 py-3.5 text-sm font-bold text-blue-700 shadow-xl hover:bg-blue-50 transition"
-            >
+          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <Link href="/services" className="btn-light sm:px-8">
               Browse All Services Now
             </Link>
-            <Link
-              href="/sign-up"
-              className="w-full sm:w-auto rounded-xl border border-white/30 bg-white/10 px-8 py-3.5 text-sm font-semibold text-white hover:bg-white/20 transition"
-            >
+            <Link href="/sign-up" className="btn-ghost-light sm:px-8">
               Create Free Account
             </Link>
           </div>
