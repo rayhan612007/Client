@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { api } from '@/lib/api';
 import { Booking, BookingStatus, STATUS_LABEL } from '@/lib/auth-shared';
 import { StatusBadge, PayBadge } from '@/components/badges';
@@ -28,10 +29,17 @@ const STATUSES: BookingStatus[] = [
   'cancelled',
 ];
 
-export default function AdminBookingsPage() {
+function BookingsContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<Filter>('all');
+
+  const rawStatus = searchParams.get('status') ?? 'all';
+  const filter: Filter =
+    rawStatus !== 'all' && (STATUSES as readonly string[]).includes(rawStatus)
+      ? (rawStatus as BookingStatus)
+      : 'all';
 
   useEffect(() => {
     api<{ data: Booking[] }>('/api/bookings/admin/all')
@@ -40,8 +48,19 @@ export default function AdminBookingsPage() {
       .finally(() => setLoading(false));
   }, []);
 
+  function setFilter(next: Filter) {
+    const params = new URLSearchParams(searchParams.toString());
+    if (next === 'all') params.delete('status');
+    else params.set('status', next);
+    const qs = params.toString();
+    router.replace(`/dashboard/admin/bookings${qs ? `?${qs}` : ''}`, {
+      scroll: false,
+    });
+  }
+
   const shown = useMemo(
-    () => (filter === 'all' ? bookings : bookings.filter((booking) => booking.status === filter)),
+    () =>
+      filter === 'all' ? bookings : bookings.filter((booking) => booking.status === filter),
     [bookings, filter],
   );
 
@@ -134,5 +153,31 @@ export default function AdminBookingsPage() {
         </Table>
       )}
     </div>
+  );
+}
+
+function BookingsSkeleton() {
+  return (
+    <div className="space-y-6">
+      <div className="space-y-3">
+        <div className="skeleton h-4 w-32" />
+        <div className="skeleton h-8 w-56" />
+        <div className="skeleton h-4 w-80 max-w-full" />
+      </div>
+      <div className="flex flex-wrap gap-2">
+        {Array.from({ length: 7 }).map((_, index) => (
+          <div key={index} className="skeleton h-8 w-24 rounded-full" />
+        ))}
+      </div>
+      <div className="skeleton h-64 w-full" />
+    </div>
+  );
+}
+
+export default function AdminBookingsPage() {
+  return (
+    <Suspense fallback={<BookingsSkeleton />}>
+      <BookingsContent />
+    </Suspense>
   );
 }

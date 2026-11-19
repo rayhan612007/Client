@@ -3,11 +3,12 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { api } from '@/lib/api';
-import { Booking, BookingStatus } from '@/lib/auth-shared';
+import { Booking, BookingStatus, STATUS_LABEL } from '@/lib/auth-shared';
 import { StatCard } from '@/components/StatCard';
 import { PageHeader } from '@/components/PageHeader';
 import {
   ArrowRight,
+  ChevronRight,
   ClipboardList,
   Clock,
   Receipt,
@@ -94,7 +95,15 @@ export default function AdminOverview() {
     status,
     count: bookings.filter((booking) => booking.status === status).length,
   }));
+  const total = bookings.length;
   const maxCount = Math.max(...counts.map((entry) => entry.count), 1);
+  const activeCount = counts
+    .filter((entry) => ['requested', 'accepted', 'in-progress'].includes(entry.status))
+    .reduce((sum, entry) => sum + entry.count, 0);
+  const completedCount = counts.find((entry) => entry.status === 'completed')?.count ?? 0;
+  const closedCount = counts
+    .filter((entry) => ['rejected', 'cancelled'].includes(entry.status))
+    .reduce((sum, entry) => sum + entry.count, 0);
 
   return (
     <div className="space-y-6">
@@ -147,42 +156,125 @@ export default function AdminOverview() {
       )}
 
       <div className="grid gap-6 lg:grid-cols-5">
-        <section className="rounded-2xl border border-border/70 bg-card p-5 shadow-xs lg:col-span-3" data-aos="fade-up">
+        <section
+          className="rounded-2xl border border-border/70 bg-card p-5 shadow-xs lg:col-span-3"
+          data-aos="fade-up"
+        >
           <div className="flex items-center justify-between gap-3">
             <div>
               <h2 className="text-base font-semibold tracking-tight">Bookings by status</h2>
-              <p className="text-xs text-muted-foreground">Live distribution across the pipeline.</p>
+              <p className="text-xs text-muted-foreground">
+                Live distribution across the pipeline.
+              </p>
             </div>
             <span className="rounded-full bg-muted px-2.5 py-1 text-xs font-semibold text-muted-foreground tabular-nums">
-              {bookings.length} total
+              {loading ? '—' : `${total} total`}
             </span>
           </div>
 
-          {bookings.length === 0 ? (
-            <p className="mt-10 text-center text-sm text-muted-foreground">
-              No bookings on the platform yet.
-            </p>
-          ) : (
+          {loading ? (
             <div className="mt-6 flex flex-col gap-3.5">
-              {counts.map(({ status, count }) => (
+              {STATUSES.map((status) => (
                 <div key={status} className="flex items-center gap-3">
-                  <span className="w-24 shrink-0 text-xs font-semibold text-muted-foreground capitalize">
-                    {status}
-                  </span>
-                  <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-muted">
-                    <div
-                      className={`h-full rounded-full ${STATUS_BAR[status]} transition-all`}
-                      style={{
-                        width: `${Math.max((count / maxCount) * 100, count > 0 ? 6 : 0)}%`,
-                      }}
-                    />
-                  </div>
-                  <span className="w-8 shrink-0 text-right text-xs font-bold tabular-nums">
-                    {count}
-                  </span>
+                  <div className="skeleton h-3 w-24" />
+                  <div className="skeleton h-2.5 flex-1 rounded-full" />
+                  <div className="skeleton h-3 w-8" />
                 </div>
               ))}
             </div>
+          ) : total === 0 ? (
+            <div className="mt-6 rounded-xl border border-dashed border-border bg-muted/30 px-6 py-8 text-center">
+              <ClipboardList className="mx-auto size-7 text-muted-foreground/70" />
+              <p className="mt-2 text-sm font-semibold">No bookings yet</p>
+              <p className="mx-auto mt-1 max-w-xs text-xs leading-relaxed text-muted-foreground">
+                Repair requests will appear here as soon as customers book a service.
+              </p>
+            </div>
+          ) : (
+            <>
+              {/* One stacked bar = the whole pipeline at a glance */}
+              <div
+                className="mt-5 flex h-2.5 overflow-hidden rounded-full bg-muted"
+                role="img"
+                aria-label="Booking status distribution"
+              >
+                {counts
+                  .filter((entry) => entry.count > 0)
+                  .map(({ status, count }) => (
+                    <div
+                      key={status}
+                      title={`${STATUS_LABEL[status]}: ${count}`}
+                      className={`${STATUS_BAR[status]} h-full transition-all duration-500`}
+                      style={{ width: `${(count / total) * 100}%` }}
+                    />
+                  ))}
+              </div>
+
+              <div className="mt-4 grid grid-cols-3 gap-2">
+                <div className="rounded-xl border border-border/60 bg-background/60 px-2 py-2.5 text-center">
+                  <p className="text-lg font-bold tabular-nums text-amber-600 dark:text-amber-400">
+                    {activeCount}
+                  </p>
+                  <p className="text-[11px] font-medium text-muted-foreground">Active</p>
+                </div>
+                <div className="rounded-xl border border-border/60 bg-background/60 px-2 py-2.5 text-center">
+                  <p className="text-lg font-bold tabular-nums text-emerald-600 dark:text-emerald-400">
+                    {completedCount}
+                  </p>
+                  <p className="text-[11px] font-medium text-muted-foreground">Completed</p>
+                </div>
+                <div className="rounded-xl border border-border/60 bg-background/60 px-2 py-2.5 text-center">
+                  <p className="text-lg font-bold tabular-nums text-rose-600 dark:text-rose-400">
+                    {closedCount}
+                  </p>
+                  <p className="text-[11px] font-medium text-muted-foreground">
+                    Rejected / Cancelled
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-4 flex flex-col gap-1">
+                {counts.map(({ status, count }) => {
+                  const share = Math.round((count / total) * 100);
+                  return (
+                    <Link
+                      key={status}
+                      href={`/dashboard/admin/bookings?status=${status}`}
+                      className="group -mx-1.5 flex items-center gap-3 rounded-lg px-1.5 py-1.5 transition hover:bg-muted/60"
+                    >
+                      <span
+                        className={`size-2.5 shrink-0 rounded-full ${STATUS_BAR[status]}`}
+                      />
+                      <span className="w-24 shrink-0 text-xs font-semibold text-foreground/80">
+                        {STATUS_LABEL[status]}
+                      </span>
+                      <div className="h-2 flex-1 overflow-hidden rounded-full bg-muted">
+                        <div
+                          className={`h-full rounded-full ${STATUS_BAR[status]} transition-all duration-500`}
+                          style={{
+                            width: `${Math.max((count / maxCount) * 100, count > 0 ? 6 : 0)}%`,
+                          }}
+                        />
+                      </div>
+                      <span className="w-8 shrink-0 text-right text-xs font-bold tabular-nums">
+                        {count}
+                      </span>
+                      <span className="w-10 shrink-0 text-right text-[11px] text-muted-foreground tabular-nums">
+                        {share}%
+                      </span>
+                      <ChevronRight className="size-3.5 shrink-0 text-muted-foreground opacity-0 transition group-hover:translate-x-0.5 group-hover:opacity-100" />
+                    </Link>
+                  );
+                })}
+              </div>
+
+              <div className="mt-4 flex items-center justify-end border-t border-border/60 pt-3">
+                <Link href="/dashboard/admin/bookings" className="link-arrow text-xs">
+                  View all bookings
+                  <ArrowRight className="size-3.5" />
+                </Link>
+              </div>
+            </>
           )}
         </section>
 
