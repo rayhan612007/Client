@@ -292,9 +292,22 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </p>
           </div>
           <div className="flex shrink-0 items-center gap-2">
-            <span className="hidden rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary md:inline-flex">
-              {ROLE_LABEL[role]}
-            </span>
+            <div className="flex min-w-0 items-center gap-2">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={avatarUrl}
+                alt={user.name || 'User'}
+                className="size-8 shrink-0 rounded-full object-cover ring-1 ring-border"
+              />
+              <div className="min-w-0 max-w-24 sm:max-w-36">
+                <p className="truncate text-xs font-semibold text-foreground">
+                  {user.name || 'Account'}
+                </p>
+                <p className="truncate text-[11px] text-muted-foreground">
+                  {ROLE_LABEL[role]}
+                </p>
+              </div>
+            </div>
             <ThemeToggle />
           </div>
         </header>

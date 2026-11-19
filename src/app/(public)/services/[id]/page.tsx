@@ -49,9 +49,13 @@ function RequestFormModal({ service, onClose }: { service: Service; onClose: () 
           problemDescription: description,
         }),
       });
-      toast.success('Repair request sent successfully!');
+      toast.success('Repair request sent successfully!', {
+        action: {
+          label: 'My Bookings',
+          onClick: () => router.push('/dashboard/customer/bookings'),
+        },
+      });
       onClose();
-      router.push('/dashboard/customer/bookings');
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Request failed');
     } finally {
@@ -369,7 +373,16 @@ export default function ServiceDetailsPage() {
           >
             <div className="flex items-center gap-4">
               <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-lg font-bold text-white shadow-md">
-                {service.technicianName?.charAt(0) || 'T'}
+                {service.technicianImage ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={service.technicianImage}
+                    alt={`${service.technicianName} profile`}
+                    className="size-full rounded-2xl object-cover"
+                  />
+                ) : (
+                  service.technicianName?.charAt(0) || 'T'
+                )}
               </div>
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
@@ -385,6 +398,12 @@ export default function ServiceDetailsPage() {
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground">
                   Specialized in {service.category} repairs
+                </p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Area: {service.technicianArea || 'Not provided'}
+                </p>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                  {service.technicianBio || 'No technician bio available.'}
                 </p>
               </div>
             </div>

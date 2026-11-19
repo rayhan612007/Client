@@ -24,8 +24,8 @@ const CATEGORIES = [
 
 const PLATFORM_LINKS = [
   { href: '/', label: 'Home' },
-  { href: '/services', label: 'Browse Services' },
-  { href: '/about', label: 'How It Works' },
+  { href: '/services', label: 'Services' },
+  { href: '/about', label: 'About' },
   { href: '/sign-up', label: 'Become a Technician' },
   { href: '/sign-in', label: 'Sign In to Account' },
 ];
@@ -107,9 +107,7 @@ export default function Footer() {
               </span>
             </Link>
             <p className="mt-3.5 max-w-sm text-sm leading-relaxed text-muted-foreground">
-              FixMate is Bangladesh&apos;s smart on-demand repair service platform. We connect
-              device owners with certified technicians for transparent, tracked, and guaranteed
-              repairs with zero upfront risk.
+              Trusted repairs, without the upfront risk.
             </p>
             <div className="mt-5 flex items-center gap-3">
               {SOCIALS.map((social) => {

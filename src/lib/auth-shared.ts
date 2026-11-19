@@ -21,6 +21,8 @@ export interface Service {
   technicianName: string;
   technicianEmail: string;
   technicianImage?: string;
+  technicianArea?: string;
+  technicianBio?: string;
   approvalStatus: ApprovalStatus;
   isAvailable: boolean;
   createdAt: string;
