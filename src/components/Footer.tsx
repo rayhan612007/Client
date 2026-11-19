@@ -99,7 +99,7 @@ export default function Footer() {
           {/* Brand Info */}
           <div className="lg:col-span-4" data-aos="fade-up">
             <Link href="/" className="inline-flex items-center gap-2.5">
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 text-white shadow-md shadow-blue-500/20">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-linear-to-tr from-blue-600 via-indigo-600 to-cyan-500 text-white shadow-md shadow-blue-500/20">
                 <WrenchIcon className="h-5 w-5 text-white" />
               </span>
               <span className="text-xl font-bold tracking-tight text-foreground">

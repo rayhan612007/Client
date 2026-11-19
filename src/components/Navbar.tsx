@@ -61,11 +61,11 @@ export default function Navbar() {
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border/70 bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/70">
+    <header className="sticky top-0 z-50 border-b border-border/70 bg-background/80 backdrop-blur-md supports-backdrop-filter:bg-background/70">
       <nav className="container-page flex items-center justify-between py-3.5">
         {/* Brand Logo */}
         <Link href="/" className="group flex items-center gap-2.5 transition">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 text-white shadow-md shadow-blue-500/20 transition-transform group-hover:scale-105">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-linear-to-tr from-blue-600 via-indigo-600 to-cyan-500 text-white shadow-md shadow-blue-500/20 transition-transform group-hover:scale-105">
             <WrenchIcon className="h-5 w-5 text-white" />
           </div>
           <div className="flex flex-col">
@@ -118,7 +118,7 @@ export default function Navbar() {
                     className="h-8 w-8 rounded-full object-cover ring-2 ring-background"
                   />
                   <div className="flex flex-col text-left">
-                    <span className="max-w-[110px] truncate text-xs font-semibold text-foreground">
+                    <span className="max-w-27.5 truncate text-xs font-semibold text-foreground">
                       {user.name || 'Account'}
                     </span>
                     <span className="text-[10px] font-medium tracking-wider text-muted-foreground uppercase">

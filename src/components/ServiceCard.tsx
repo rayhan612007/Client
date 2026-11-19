@@ -36,16 +36,15 @@ export function ServiceCard({
           alt={service.title}
           className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.06]"
         />
-        <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/55 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-20 bg-linear-to-t from-black/55 to-transparent" />
         <span className="absolute top-3 left-3 rounded-full bg-slate-900/85 px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur-md">
           {service.category}
         </span>
         <span
-          className={`absolute top-3 right-3 rounded-full border px-2.5 py-1 text-[11px] font-semibold backdrop-blur-md ${
-            isHome
+          className={`absolute top-3 right-3 rounded-full border px-2.5 py-1 text-[11px] font-semibold backdrop-blur-md ${isHome
               ? 'border-emerald-400/40 bg-emerald-950/85 text-emerald-300'
               : 'border-indigo-400/40 bg-indigo-950/85 text-indigo-300'
-          }`}
+            }`}
         >
           {isHome ? 'Home Visit' : 'Shop Drop-off'}
         </span>
