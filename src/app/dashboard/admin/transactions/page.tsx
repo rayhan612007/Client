@@ -22,7 +22,7 @@ export default function AdminTransactionsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api<{ totalRevenue: number; data: Payment[] }>('/api/payments/admin/all')
+    api<{ totalRevenue: number; data: Payment[] }>('/api/admin/payments')
       .then((res) => {
         setPayments(res.data);
         setTotalRevenue(res.totalRevenue ?? 0);

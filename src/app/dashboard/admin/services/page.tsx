@@ -40,7 +40,7 @@ export default function AdminServicesPage() {
   async function decide(id: string, approvalStatus: 'approved' | 'rejected') {
     setBusyId(id);
     try {
-      await api(`/api/services/${id}/approval`, {
+      await api(`/api/admin/services/${id}/approval`, {
         method: 'PATCH',
         body: JSON.stringify({ approvalStatus }),
       });

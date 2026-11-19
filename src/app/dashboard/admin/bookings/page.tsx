@@ -42,7 +42,7 @@ function BookingsContent() {
       : 'all';
 
   useEffect(() => {
-    api<{ data: Booking[] }>('/api/bookings/admin/all')
+    api<{ data: Booking[] }>('/api/admin/bookings')
       .then((res) => setBookings(res.data))
       .catch(() => setBookings([]))
       .finally(() => setLoading(false));
