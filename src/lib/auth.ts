@@ -7,9 +7,23 @@ import { MongoClient } from 'mongodb';
 
 const client = new MongoClient(process.env.MONGODB_URI as string);
 const db = client.db(process.env.MONGODB_DB);
+const googleClientId = process.env.GOOGLE_CLIENT_ID;
+const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
 
 export const auth = betterAuth({
   database: mongodbAdapter(db),
+  socialProviders:
+    googleClientId && googleClientSecret
+      ? {
+          google: {
+            clientId: googleClientId,
+            clientSecret: googleClientSecret,
+            mapProfileToUser: (profile) => ({
+              image: profile.picture,
+            }),
+          },
+        }
+      : undefined,
   // Spec: password may be 6 chars — better-auth's default minimum is 8
   emailAndPassword: { enabled: true, minPasswordLength: 6 },
   plugins: [jwt()],

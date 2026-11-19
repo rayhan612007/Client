@@ -10,6 +10,7 @@ import { AvatarPicker } from '@/components/AvatarPicker';
 import { Field } from '@/components/SettingsCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { FcGoogle } from 'react-icons/fc';
 import {
   ArrowRight,
   Eye,
@@ -75,9 +76,10 @@ export default function SignUpPage() {
   const [role, setRole] = useState<SignUpRole>('customer');
   const [loading, setLoading] = useState(false);
   const [avatarUploading, setAvatarUploading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   const pwErrors = password ? validatePassword(password) : [];
-  const busy = loading || avatarUploading;
+  const busy = loading || avatarUploading || googleLoading;
 
   async function onSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -110,6 +112,21 @@ export default function SignUpPage() {
     toast.success('Account created! Redirecting to your dashboard...');
     router.push(`/dashboard/${role}`);
     router.refresh();
+  }
+
+  async function signUpWithGoogle() {
+    setGoogleLoading(true);
+    try {
+      const { error } = await authClient.signIn.social({
+        provider: 'google',
+        callbackURL: '/dashboard',
+      });
+      if (error) toast.error(error.message ?? 'Google sign-up failed');
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Google sign-up failed');
+    } finally {
+      setGoogleLoading(false);
+    }
   }
 
   return (
@@ -314,6 +331,27 @@ export default function SignUpPage() {
                 )}
               </Button>
             </form>
+
+            <div className="my-5 flex items-center gap-3 text-[11px] font-medium text-muted-foreground">
+              <span className="h-px flex-1 bg-border" />
+              OR
+              <span className="h-px flex-1 bg-border" />
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              size="lg"
+              className="h-11 w-full rounded-xl"
+              onClick={signUpWithGoogle}
+              disabled={busy}
+            >
+              {googleLoading ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <FcGoogle className="size-4" aria-hidden="true" />
+              )}
+              Continue with Google
+            </Button>
 
             <p className="mt-4 flex items-center justify-center gap-1.5 text-center text-[11px] text-muted-foreground">
               <ShieldCheck className="size-3.5" />

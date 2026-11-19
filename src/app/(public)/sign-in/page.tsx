@@ -7,6 +7,7 @@ import { authClient } from '@/lib/auth-client';
 import { Field } from '@/components/SettingsCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { FcGoogle } from 'react-icons/fc';
 import { toast } from 'sonner';
 import {
   ArrowRight,
@@ -34,6 +35,7 @@ function SignInForm() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -59,6 +61,24 @@ function SignInForm() {
     const role = session?.user?.role ?? 'customer';
     router.push(`/dashboard/${role}`);
     router.refresh();
+  }
+
+  async function signInWithGoogle() {
+    const callbackURL =
+      next && next.startsWith('/') && !next.startsWith('//') ? next : '/dashboard';
+
+    setGoogleLoading(true);
+    try {
+      const { error } = await authClient.signIn.social({
+        provider: 'google',
+        callbackURL,
+      });
+      if (error) toast.error(error.message ?? 'Google sign-in failed');
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Google sign-in failed');
+    } finally {
+      setGoogleLoading(false);
+    }
   }
 
   return (
@@ -176,7 +196,12 @@ function SignInForm() {
                 </div>
               </Field>
 
-              <Button type="submit" size="lg" className="h-11 w-full rounded-xl" disabled={loading}>
+              <Button
+                type="submit"
+                size="lg"
+                className="h-11 w-full rounded-xl"
+                disabled={loading || googleLoading}
+              >
                 {loading ? (
                   <>
                     <Loader2 className="size-4 animate-spin" />
@@ -190,6 +215,27 @@ function SignInForm() {
                 )}
               </Button>
             </form>
+
+            <div className="my-5 flex items-center gap-3 text-[11px] font-medium text-muted-foreground">
+              <span className="h-px flex-1 bg-border" />
+              OR
+              <span className="h-px flex-1 bg-border" />
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              size="lg"
+              className="h-11 w-full rounded-xl"
+              onClick={signInWithGoogle}
+              disabled={loading || googleLoading}
+            >
+              {googleLoading ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <FcGoogle className="size-4" aria-hidden="true" />
+              )}
+              Continue with Google
+            </Button>
 
             <div className="mt-6 flex items-center gap-3 text-[11px] font-medium text-muted-foreground">
               <span className="h-px flex-1 bg-border" />
