@@ -134,6 +134,10 @@
     @apply bg-background text-foreground antialiased;
     text-rendering: optimizeLegibility;
   }
+  select option {
+    background-color: var(--card);
+    color: var(--card-foreground);
+  }
   ::selection {
     background-color: color-mix(in oklch, var(--primary) 24%, transparent);
     color: var(--foreground);

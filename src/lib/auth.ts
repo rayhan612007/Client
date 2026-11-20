@@ -9,7 +9,7 @@ const client = new MongoClient(process.env.MONGODB_URI as string);
 const db = client.db(process.env.MONGODB_DB);
 const googleClientId = process.env.GOOGLE_CLIENT_ID;
 const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
-const baseURL = process.env.BETTER_AUTH_URL ?? 'http://localhost:3000';
+const baseURL = process.env.BETTER_AUTH_URL;
 
 export const auth = betterAuth({
   baseURL,

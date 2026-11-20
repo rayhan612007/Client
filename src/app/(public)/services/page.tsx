@@ -249,7 +249,7 @@ function ServicesList() {
 
       {!loading && services.length > 0 && (
         <p className="mt-10 flex items-center justify-center gap-1.5 text-xs font-medium text-muted-foreground">
-          <CheckIcon className="h-3.5 w-3.5 text-emerald-500" />
+          <CheckIcon className="h-3.5 w-3.5 text-emerald-500 dark:text-emerald-400" />
           All listings are admin-approved, ID-verified and covered by a 30-day warranty
         </p>
       )}

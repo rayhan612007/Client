@@ -21,7 +21,7 @@ export default function PaymentCancelPage() {
         </p>
 
         <div className="mt-8 flex w-full items-start gap-2 rounded-xl border border-border/70 bg-card p-4 text-left text-xs leading-relaxed text-muted-foreground">
-          <ShieldCheck className="mt-0.5 size-4 shrink-0 text-emerald-500" />
+          <ShieldCheck className="mt-0.5 size-4 shrink-0 text-emerald-500 dark:text-emerald-400" />
           Your device stays protected: payment is only collected after the repair is completed
           and verified by you.
         </div>

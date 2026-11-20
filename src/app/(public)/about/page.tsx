@@ -170,7 +170,7 @@ export default function AboutPage() {
             <ul className="mt-4 space-y-3.5">
               {STANDARDS.map((item) => (
                 <li key={item.title} className="flex items-start gap-2.5 text-sm">
-                  <CheckCircleIcon className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" />
+                  <CheckCircleIcon className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500 dark:text-emerald-400" />
                   <span className="text-muted-foreground">
                     <strong className="font-semibold text-foreground">
                       {item.title}:

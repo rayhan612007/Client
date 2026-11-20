@@ -180,7 +180,7 @@ function RequestFormModal({ service, onClose }: { service: Service; onClose: () 
             />
           </label>
           {description.length > 0 && description.trim().length < 20 && (
-            <p className="-mt-2 text-xs font-medium text-rose-500">
+            <p className="-mt-2 text-xs font-medium text-rose-500 dark:text-rose-400">
               {20 - description.trim().length} more characters required
             </p>
           )}
@@ -342,7 +342,7 @@ export default function ServiceDetailsPage() {
                 </strong>
               </span>
               <span className="flex items-center gap-1.5">
-                <ClockIcon className="h-4 w-4 text-amber-500" />
+                <ClockIcon className="h-4 w-4 text-amber-500 dark:text-amber-400" />
                 Duration:{' '}
                 <strong className="font-semibold text-foreground">
                   {service.estimatedDuration}
@@ -504,7 +504,7 @@ export default function ServiceDetailsPage() {
             </button>
 
             <p className="mt-3 flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
-              <CheckIcon className="h-3.5 w-3.5 text-emerald-500" />
+              <CheckIcon className="h-3.5 w-3.5 text-emerald-500 dark:text-emerald-400" />
               No card details required to request
             </p>
           </div>
