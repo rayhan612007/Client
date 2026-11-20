@@ -6,8 +6,9 @@ import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 
 /**
- * Initialises AOS for the public route group and re-scans after navigation.
- * AOS's MutationObserver also picks up asynchronously rendered public content.
+ * Mounted only on pages that use scroll reveals (home, services, about,
+ * sign-in, sign-up). Re-scans after navigation; the MutationObserver also
+ * picks up asynchronously rendered content.
  *
  * Tuning notes: 850ms with a restrained trigger zone keeps reveals smooth
  * without delaying interaction; `once` avoids repeating motion on long pages.

@@ -1,15 +1,5 @@
-import { Loader2 } from 'lucide-react';
+import { LoadingSpinner } from '@/components/LoadingSpinner';
 
 export default function DashboardLoading() {
-  return (
-    <div
-      data-aos-disabled=""
-      role="status"
-      aria-label="Loading"
-      className="flex min-h-[50vh] w-full items-center justify-center"
-    >
-      <Loader2 className="size-9 animate-spin text-primary" aria-hidden="true" />
-      <span className="sr-only">Loading dashboard</span>
-    </div>
-  );
+  return <LoadingSpinner />;
 }

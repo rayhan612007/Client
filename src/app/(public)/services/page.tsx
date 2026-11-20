@@ -6,6 +6,8 @@ import { api } from '@/lib/api';
 import { Service, CATEGORIES } from '@/lib/auth-shared';
 import { SectionHeading } from '@/components/SectionHeading';
 import { ServiceCard } from '@/components/ServiceCard';
+import { AOSProvider } from '@/components/AOSProvider';
+import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { SearchIcon, WrenchIcon, ArrowRightIcon, CheckIcon } from '@/components/Icons';
 
 function ServicesList() {
@@ -218,11 +220,7 @@ function ServicesList() {
 
       {/* Services grid / loading / empty */}
       {loading ? (
-        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="skeleton h-[24rem]" />
-          ))}
-        </div>
+        <LoadingSpinner />
       ) : services.length === 0 ? (
         <div
           data-aos="fade-up"
@@ -261,8 +259,13 @@ function ServicesList() {
 
 export default function ServicesPage() {
   return (
-    <Suspense fallback={<div className="container-page py-16" />}>
-      <ServicesList />
-    </Suspense>
+    <>
+      <AOSProvider />
+      <Suspense
+        fallback={<LoadingSpinner />}
+      >
+        <ServicesList />
+      </Suspense>
+    </>
   );
 }

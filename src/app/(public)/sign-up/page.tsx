@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { AvatarPicker } from '@/components/AvatarPicker';
 import { Field } from '@/components/SettingsCard';
+import { AOSProvider } from '@/components/AOSProvider';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { FcGoogle } from 'react-icons/fc';
@@ -131,6 +132,7 @@ export default function SignUpPage() {
 
   return (
     <div className="relative overflow-hidden">
+      <AOSProvider />
       <div className="pointer-events-none absolute inset-0 bg-grid-faint opacity-50" />
       <div className="pointer-events-none absolute -top-24 left-1/2 h-72 w-[42rem] -translate-x-1/2 rounded-full bg-primary/10 blur-3xl" />
 

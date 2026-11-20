@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { SectionHeading } from '@/components/SectionHeading';
+import { AOSProvider } from '@/components/AOSProvider';
 import {
   WrenchIcon,
   ShieldCheckIcon,
@@ -86,6 +87,7 @@ const VALUES = [
 export default function AboutPage() {
   return (
     <div className="bg-background">
+      <AOSProvider />
       {/* Hero */}
       <section className="relative overflow-hidden bg-[#070c1a] py-20 text-white sm:py-24">
         <div

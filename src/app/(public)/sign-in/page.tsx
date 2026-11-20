@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useState } from 'react';
 import { authClient } from '@/lib/auth-client';
 import { Field } from '@/components/SettingsCard';
+import { AOSProvider } from '@/components/AOSProvider';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { FcGoogle } from 'react-icons/fc';
@@ -267,14 +268,17 @@ function SignInForm() {
 
 export default function SignInPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="mx-auto flex min-h-[60vh] max-w-md items-center justify-center px-4">
-          <Loader2 className="size-6 animate-spin text-primary" />
-        </div>
-      }
-    >
-      <SignInForm />
-    </Suspense>
+    <>
+      <AOSProvider />
+      <Suspense
+        fallback={
+          <div className="mx-auto flex min-h-[60vh] max-w-md items-center justify-center px-4">
+            <Loader2 className="size-6 animate-spin text-primary" />
+          </div>
+        }
+      >
+        <SignInForm />
+      </Suspense>
+    </>
   );
 }

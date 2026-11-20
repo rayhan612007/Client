@@ -7,6 +7,7 @@ import { api } from '@/lib/api';
 import { Service, CATEGORIES } from '@/lib/auth-shared';
 import { SectionHeading } from '@/components/SectionHeading';
 import { ServiceCard } from '@/components/ServiceCard';
+import { AOSProvider } from '@/components/AOSProvider';
 import {
   WrenchIcon,
   SparklesIcon,
@@ -277,6 +278,7 @@ export default function HomePage() {
 
   return (
     <div className="bg-background text-foreground">
+      <AOSProvider />
       <section className="relative overflow-hidden bg-[#070c1a] text-white">
         <div
           className="pointer-events-none absolute inset-0 opacity-70"

@@ -279,27 +279,27 @@
 
 /* Soft reveal distances — AOS defaults travel 100px, which feels aggressive.
    These gentler offsets keep scroll reveals subtle across the whole app. */
-html [data-aos] {
+html [data-aos].aos-init {
   backface-visibility: hidden;
   transform-style: preserve-3d;
   will-change: transform, opacity;
 }
-html [data-aos].aos-animate {
+html [data-aos].aos-init.aos-animate {
   will-change: auto;
 }
-html [data-aos='fade-up']:not(.aos-animate) {
+html [data-aos='fade-up'].aos-init:not(.aos-animate) {
   transform: translate3d(0, 16px, 0) !important;
 }
-html [data-aos='fade-down']:not(.aos-animate) {
+html [data-aos='fade-down'].aos-init:not(.aos-animate) {
   transform: translate3d(0, -14px, 0) !important;
 }
-html [data-aos='fade-left']:not(.aos-animate) {
+html [data-aos='fade-left'].aos-init:not(.aos-animate) {
   transform: translate3d(16px, 0, 0) !important;
 }
-html [data-aos='fade-right']:not(.aos-animate) {
+html [data-aos='fade-right'].aos-init:not(.aos-animate) {
   transform: translate3d(-16px, 0, 0) !important;
 }
-html [data-aos='zoom-in']:not(.aos-animate) {
+html [data-aos='zoom-in'].aos-init:not(.aos-animate) {
   transform: scale(0.97) !important;
 }
 
