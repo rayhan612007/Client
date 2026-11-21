@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { authClient } from '@/lib/auth-client';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -69,6 +69,8 @@ function validatePassword(password: string): string[] {
 
 export default function SignUpPage() {
   const router = useRouter();
+  const { data: authSession, isPending } = authClient.useSession();
+  const checkedSession = useRef(false);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -78,6 +80,15 @@ export default function SignUpPage() {
   const [loading, setLoading] = useState(false);
   const [avatarUploading, setAvatarUploading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+
+  useEffect(() => {
+    if (checkedSession.current || isPending) return;
+    checkedSession.current = true;
+    if (!authSession?.user) return;
+
+    const role = (authSession.user as { role?: string }).role;
+    router.replace(`/dashboard/${role === 'technician' || role === 'admin' ? role : 'customer'}`);
+  }, [authSession, isPending, router]);
 
   const pwErrors = password ? validatePassword(password) : [];
   const busy = loading || avatarUploading || googleLoading;

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Suspense, useState } from 'react';
+import { Suspense, useEffect, useRef, useState } from 'react';
 import { authClient } from '@/lib/auth-client';
 import { Field } from '@/components/SettingsCard';
 import { AOSProvider } from '@/components/AOSProvider';
@@ -32,11 +32,22 @@ function SignInForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const next = searchParams.get('next');
+  const { data: authSession, isPending } = authClient.useSession();
+  const checkedSession = useRef(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+
+  useEffect(() => {
+    if (checkedSession.current || isPending) return;
+    checkedSession.current = true;
+    if (!authSession?.user) return;
+
+    const role = (authSession.user as { role?: string }).role;
+    router.replace(`/dashboard/${role === 'technician' || role === 'admin' ? role : 'customer'}`);
+  }, [authSession, isPending, router]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
