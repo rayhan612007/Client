@@ -2,56 +2,114 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { api } from '@/lib/api';
 import { Service, CATEGORIES } from '@/lib/auth-shared';
 import { SectionHeading } from '@/components/SectionHeading';
 import { ServiceCard } from '@/components/ServiceCard';
 import { AOSProvider } from '@/components/AOSProvider';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { Button } from '@/components/ui/button';
 import { SearchIcon, WrenchIcon, ArrowRightIcon, CheckIcon } from '@/components/Icons';
+
+const PAGE_SIZE = 8;
+
+type ServicePage = {
+  data: Service[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+    hasPrev: boolean;
+    hasNext: boolean;
+  };
+};
+
+function pageList(current: number, total: number): (number | 'dots')[] {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+
+  const visible = new Set([1, total, current - 1, current, current + 1]);
+  if (current <= 3) [2, 3, 4].forEach((n) => visible.add(n));
+  if (current >= total - 2) [total - 3, total - 2, total - 1].forEach((n) => visible.add(n));
+
+  const sorted = [...visible].filter((n) => n >= 1 && n <= total).sort((a, b) => a - b);
+  const result: (number | 'dots')[] = [];
+  sorted.forEach((n, index) => {
+    if (index > 0 && n - sorted[index - 1] > 1) result.push('dots');
+    result.push(n);
+  });
+  return result;
+}
 
 function ServicesList() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
+  const [pagination, setPagination] = useState<ServicePage['pagination'] | null>(null);
   const [search, setSearch] = useState(searchParams.get('search') ?? '');
 
   const category = searchParams.get('category') ?? '';
   const serviceMode = searchParams.get('serviceMode') ?? '';
-  const sort = searchParams.get('sort') ?? 'newest';
+  const sort = searchParams.get('sort') ?? '';
+  const pageParam = Number.parseInt(searchParams.get('page') ?? '1', 10);
+  const page = Number.isSafeInteger(pageParam) && pageParam > 0 ? pageParam : 1;
 
   useEffect(() => {
     let active = true;
-    const params = new URLSearchParams();
-    const q = searchParams.get('search');
-    if (q) params.set('search', q);
-    if (category) params.set('category', category);
-    if (serviceMode) params.set('serviceMode', serviceMode);
-    if (sort && sort !== 'newest') params.set('sort', sort);
+    void (async () => {
+      setLoading(true);
+      const params = new URLSearchParams();
+      const q = searchParams.get('search');
+      if (q) params.set('search', q);
+      if (category) params.set('category', category);
+      if (serviceMode) params.set('serviceMode', serviceMode);
+      if (sort && sort !== 'newest') params.set('sort', sort);
+      params.set('page', String(page));
+      params.set('limit', String(PAGE_SIZE));
 
-    api<{ data: Service[] }>(`/api/services?${params.toString()}`)
-      .then((res) => {
-        if (active) setServices(res.data);
-      })
-      .catch(() => {
-        if (active) setServices([]);
-      })
-      .finally(() => {
+      try {
+        const res = await api<ServicePage>(`/api/services?${params.toString()}`);
+        if (!active) return;
+        setServices(res.data);
+        setPagination(res.pagination);
+        if (res.pagination.page !== page) {
+          const corrected = new URLSearchParams(searchParams.toString());
+          corrected.set('page', String(res.pagination.page));
+          router.replace(`/services?${corrected.toString()}`);
+        }
+      } catch {
+        if (active) {
+          setServices([]);
+          setPagination(null);
+        }
+      } finally {
         if (active) setLoading(false);
-      });
+      }
+    })();
 
     return () => {
       active = false;
     };
-  }, [searchParams, category, serviceMode, sort]);
+  }, [searchParams, category, serviceMode, sort, page, router]);
 
   // filters persist in the URL → survive reload (server-side filtering)
   function setParam(key: string, value: string) {
     const params = new URLSearchParams(searchParams.toString());
     if (value) params.set(key, value);
     else params.delete(key);
-    router.push(`/services?${params.toString()}`);
+    if (key !== 'page') params.delete('page');
+    const query = params.toString();
+    router.push(query ? `/services?${query}` : '/services');
+  }
+
+  function goToPage(next: number) {
+    const params = new URLSearchParams(searchParams.toString());
+    if (next > 1) params.set('page', String(next));
+    else params.delete('page');
+    const query = params.toString();
+    router.push(query ? `/services?${query}` : '/services');
   }
 
   function onSearch(e: React.FormEvent) {
@@ -65,6 +123,9 @@ function ServicesList() {
   }
 
   const hasFilters = Boolean(search || category || serviceMode || (sort && sort !== 'newest'));
+  const total = pagination?.total ?? services.length;
+  const first = pagination ? (pagination.page - 1) * pagination.limit + 1 : 0;
+  const last = pagination ? first + services.length - 1 : services.length;
 
   return (
     <div className="container-page py-12 sm:py-16">
@@ -85,7 +146,7 @@ function ServicesList() {
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-60" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
             </span>
-            {services.length} {services.length === 1 ? 'service' : 'services'} available
+            {total} {total === 1 ? 'service' : 'services'} available
           </div>
         )}
       </div>
@@ -248,10 +309,89 @@ function ServicesList() {
       )}
 
       {!loading && services.length > 0 && (
-        <p className="mt-10 flex items-center justify-center gap-1.5 text-xs font-medium text-muted-foreground">
-          <CheckIcon className="h-3.5 w-3.5 text-emerald-500 dark:text-emerald-400" />
-          All listings are admin-approved, ID-verified and covered by a 30-day warranty
-        </p>
+        <>
+          <p className="mt-10 flex items-center justify-center gap-1.5 text-xs font-medium text-muted-foreground">
+            <CheckIcon className="h-3.5 w-3.5 text-emerald-500 dark:text-emerald-400" />
+            All listings are admin-approved, ID-verified and covered by a 30-day warranty
+          </p>
+
+          {pagination && pagination.total > 0 && (
+            <div className="mt-6 flex flex-col items-center gap-4 border-t border-border/60 pt-6 sm:flex-row sm:justify-between">
+              <p
+                aria-live="polite"
+                className="text-center text-xs font-medium text-muted-foreground sm:text-left"
+              >
+                Showing{' '}
+                <span className="font-bold text-foreground">
+                  {first}&ndash;{last}
+                </span>{' '}
+                of <span className="font-bold text-foreground">{pagination.total}</span> services
+                <span className="ml-1.5 hidden text-muted-foreground/70 lg:inline">
+                  &middot; {PAGE_SIZE} per page
+                </span>
+              </p>
+
+              {pagination.totalPages > 1 && (
+                <nav aria-label="Services pagination" className="flex items-center gap-1.5">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={!pagination.hasPrev}
+                    onClick={() => goToPage(pagination.page - 1)}
+                    aria-label="Previous page"
+                    className="h-9 gap-1 rounded-xl px-2.5 text-xs font-semibold sm:px-3.5"
+                  >
+                    <ChevronLeft className="size-4" />
+                    <span className="hidden sm:inline">Previous</span>
+                  </Button>
+
+                  <div className="flex items-center gap-1">
+                    {pageList(pagination.page, pagination.totalPages).map((item, index) =>
+                      item === 'dots' ? (
+                        <span
+                          key={`dots-${index}`}
+                          aria-hidden="true"
+                          className="flex size-9 items-center justify-center text-xs text-muted-foreground"
+                        >
+                          &hellip;
+                        </span>
+                      ) : (
+                        <Button
+                          key={item}
+                          type="button"
+                          variant={item === pagination.page ? 'default' : 'outline'}
+                          size="icon"
+                          onClick={() => goToPage(item)}
+                          aria-label={`Page ${item}`}
+                          aria-current={item === pagination.page ? 'page' : undefined}
+                          className={`size-9 rounded-xl text-xs font-semibold ${
+                            item === pagination.page
+                              ? 'shadow-md shadow-primary/20'
+                              : 'text-muted-foreground hover:text-foreground'
+                          }`}
+                        >
+                          {item}
+                        </Button>
+                      ),
+                    )}
+                  </div>
+
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={!pagination.hasNext}
+                    onClick={() => goToPage(pagination.page + 1)}
+                    aria-label="Next page"
+                    className="h-9 gap-1 rounded-xl px-2.5 text-xs font-semibold sm:px-3.5"
+                  >
+                    <span className="hidden sm:inline">Next</span>
+                    <ChevronRight className="size-4" />
+                  </Button>
+                </nav>
+              )}
+            </div>
+          )}
+        </>
       )}
     </div>
   );

@@ -261,8 +261,8 @@ export default function HomePage() {
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
 
   useEffect(() => {
-    api<{ data: Service[] }>('/api/services')
-      .then((res) => setFeatured((res.data ?? []).slice(0, 6)))
+    api<{ data: Service[] }>('/api/services?limit=6')
+      .then((res) => setFeatured(res.data ?? []))
       .catch(() => setFeatured([]))
       .finally(() => setLoading(false));
   }, []);
