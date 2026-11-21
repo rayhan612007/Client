@@ -4,8 +4,15 @@ import { jwt } from 'better-auth/plugins';
 import { APIError, createAuthMiddleware } from 'better-auth/api';
 
 import { MongoClient } from 'mongodb';
+const globalForMongo = globalThis as unknown as {
+  mongoClient?: MongoClient;
+};
 
-const client = new MongoClient(process.env.MONGODB_URI as string);
+const client = globalForMongo.mongoClient ?? new MongoClient(process.env.MONGODB_URI as string, { maxPoolSize: 10, maxIdleTimeMS: 60000, });
+
+if (process.env.NODE_ENV !== "production") {
+  globalForMongo.mongoClient = client;
+}
 const db = client.db(process.env.MONGODB_DB);
 const googleClientId = process.env.GOOGLE_CLIENT_ID;
 const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
@@ -13,18 +20,18 @@ const baseURL = process.env.BETTER_AUTH_URL;
 
 export const auth = betterAuth({
   baseURL,
-  database: mongodbAdapter(db),
+  database: mongodbAdapter(db, { client }),
   socialProviders:
     googleClientId && googleClientSecret
       ? {
-          google: {
-            clientId: googleClientId,
-            clientSecret: googleClientSecret,
-            mapProfileToUser: (profile) => ({
-              image: profile.picture,
-            }),
-          },
-        }
+        google: {
+          clientId: googleClientId,
+          clientSecret: googleClientSecret,
+          mapProfileToUser: (profile) => ({
+            image: profile.picture,
+          }),
+        },
+      }
       : undefined,
   // Spec: password may be 6 chars — better-auth's default minimum is 8
   emailAndPassword: { enabled: true, minPasswordLength: 6 },
